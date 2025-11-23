@@ -41,39 +41,40 @@ const config = {
         light: {
           colors: {
             primary: {
-              DEFAULT: "#7C3AED", // base
-              foreground: "#FFFFFF", // good contrast for text/icons
+              DEFAULT: "#59718B",
+              foreground: "#FFFFFF",
 
-              50: "#F5F3FF",
-              100: "#EDE9FE",
-              200: "#DDD6FE",
-              300: "#C4B5FD",
-              400: "#A78BFA",
-              500: "#8B5CF6",
-              600: "#7C3AED", // your DEFAULT
-              700: "#6D28D9",
-              800: "#5B21B6",
-              900: "#4C1D95",
-            },
+              50: "#EEF3F6",
+              100: "#DCE5ED",
+              200: "#B8CBDC",
+              300: "#94B1CB",
+              400: "#6F97B9",
+              500: "#59718B", // DEFAULT
+              600: "#4A5E74",
+              700: "#3A4B5D",
+              800: "#2B3946",
+              900: "#1B262F",
+            }
+
           }
         },
         dark: {
           colors: {
             primary: {
-              DEFAULT: "#7C3AED", // base
-              foreground: "#FFFFFF", // good contrast for text/icons
+              DEFAULT: "#59718B",
+              foreground: "#FFFFFF",
 
-              50: "#F5F3FF",
-              100: "#EDE9FE",
-              200: "#DDD6FE",
-              300: "#C4B5FD",
-              400: "#A78BFA",
-              500: "#8B5CF6",
-              600: "#7C3AED", // your DEFAULT
-              700: "#6D28D9",
-              800: "#5B21B6",
-              900: "#4C1D95",
-            },
+              50: "#EEF3F6",
+              100: "#DCE5ED",
+              200: "#B8CBDC",
+              300: "#94B1CB",
+              400: "#6F97B9",
+              500: "#59718B", // DEFAULT
+              600: "#4A5E74",
+              700: "#3A4B5D",
+              800: "#2B3946",
+              900: "#1B262F",
+            }
           }
         },
       }

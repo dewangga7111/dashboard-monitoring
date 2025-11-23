@@ -80,7 +80,7 @@ export default function SidebarContent({ open, setOpen, onClose }: SidebarConten
               <Menu size={20} />
             </Button>
           </Tooltip>
-          {open && <span className="font-bold"><Image src={logo.src} alt="Logo" height={50} /></span>}
+          {open && <span className="font-bold"><Image src={logo.src} alt="Logo" width={100} /></span>}
         </div>
       )}
 

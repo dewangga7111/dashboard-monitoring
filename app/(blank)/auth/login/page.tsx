@@ -8,6 +8,7 @@ import AppTextInput from "@/components/common/app-text-input";
 import { Button, Card, CardBody, Form, Image } from "@heroui/react";
 import Footer from "@/components/footer";
 import logo from "@/assets/images/logo.png"
+import server from "@/assets/images/server.jpg"
 import AppTextInputPassword from "@/components/common/app-text-input-password";
 import { showSuccessToast } from "@/utils/common";
 import { isMobile } from "react-device-detect";
@@ -59,7 +60,7 @@ export default function LoginPage() {
   if (isMobile) {
     return (
       <div className="flex flex-col justify-between px-5 h-full">
-        <Image src={logo.src} alt="Logo" height={70} />
+        <Image src={logo.src} alt="Logo" width={100} />
         <div className="w-full">
           <div className="flex flex-col mb-12">
             <span className="text-4xl font-semibold bg-clip-text text-transparent bg-gradient-to-b from-primary to-primary-300">Welcome Back</span>
@@ -76,9 +77,9 @@ export default function LoginPage() {
     <div className="flex justify-center items-center h-full">
       <Card className="w-[70%] h-[85%] shadow-2xl">
         <CardBody className="grid grid-cols-2 p-0 h-full">
-          <div className="w-full h-full bg-[url('https://heroui.com/images/hero-card-complete.jpeg')] bg-cover bg-center rounded-l-xl">
+          <div className="w-full h-full bg-[url('@/assets/images/server.jpg')] bg-cover bg-center rounded-l-xl">
             <div className="absolute left-3 top-3">
-              <Image src={logo.src} alt="Logo" height={70} />
+              <Image src={logo.src} alt="Logo" width={180} />
             </div>
           </div>
           <div className="flex flex-col flex-1">
