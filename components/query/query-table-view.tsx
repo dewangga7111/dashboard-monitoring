@@ -37,17 +37,15 @@ export default function PrometheusTableView({ data, loading }: PrometheusTableVi
   const allLabelKeys = Array.from(
     new Set(data.flatMap(row => Object.keys(row.labels)))
   ).sort();
-
+  
   return (
     <div className="overflow-x-auto">
       <Table aria-label="Prometheus query results" className="mt-3" removeWrapper>
         <TableHeader>
           <TableColumn key="metric">METRIC</TableColumn>
-          <>
             {allLabelKeys.map(key => (
               <TableColumn key={key}>{key.toUpperCase()}</TableColumn>
-            ))}
-          </>
+            )) as any}
           <TableColumn key="value">VALUE</TableColumn>
           <TableColumn key="timestamp">TIMESTAMP</TableColumn>
         </TableHeader>
@@ -61,7 +59,6 @@ export default function PrometheusTableView({ data, loading }: PrometheusTableVi
                   </code>
                 </Tooltip>
               </TableCell>
-              <>
                 {allLabelKeys.map(key => (
                   <TableCell key={key}>
                     {row.labels[key] ? (
@@ -72,8 +69,7 @@ export default function PrometheusTableView({ data, loading }: PrometheusTableVi
                       <span className="text-default-400">-</span>
                     )}
                   </TableCell>
-                ))}
-              </>
+                )) as any}
               <TableCell>
                 <span className="font-mono text-sm">
                   {typeof row.value === 'number'

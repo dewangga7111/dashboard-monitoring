@@ -4,6 +4,9 @@ import { EditorState } from '@codemirror/state';
 import { autocompletion, CompletionContext } from '@codemirror/autocomplete';
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { PromQLExtension } from '@prometheus-io/codemirror-promql';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { fetchPrometheusMetricsOptions } from "@/redux/api/prometheus-api";
 
 const promQL = new PromQLExtension();
 
@@ -21,37 +24,24 @@ const mockFunctions = [
 ];
 
 interface PromQLEditorProps {
-  prometheusUrl?: string;
   value?: string;
   onChange?: (value: string) => void;
 }
 
-export default function PromQLEditor({ 
-  prometheusUrl = 'http://localhost:9090',
+export default function PromQLEditor({
   value = '',
-  onChange 
+  onChange
 }: PromQLEditorProps) {
+  const dispatch = useDispatch<AppDispatch>();
+  const metrics = useSelector((state: RootState) => state.prometheus.metricOptions);
   const editorRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
-  const [metrics, setMetrics] = useState<string[]>([]);
   const isUpdatingFromProp = useRef(false);
 
   // Fetch metrics from Prometheus API
   useEffect(() => {
-    const fetchMetrics = async () => {
-      try {
-        const response = await fetch(`${prometheusUrl}/api/v1/label/__name__/values`);
-        const data = await response.json();
-        if (data.status === 'success') {
-          setMetrics(data.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch metrics:', error);
-      }
-    };
-
-    fetchMetrics();
-  }, [prometheusUrl]);
+    dispatch(fetchPrometheusMetricsOptions());
+  }, [dispatch]);
 
   // Autocomplete function
   const promqlCompletions = async (context: CompletionContext) => {
@@ -69,7 +59,6 @@ export default function PromQLEditor({
         info: func.signature
       });
     });
-
     // Add metrics
     metrics.forEach(metric => {
       options.push({
@@ -162,12 +151,12 @@ export default function PromQLEditor({
     viewRef.current = view;
 
     return () => view.destroy();
-  }, [metrics]); // Only reinitialize when metrics change
+  }, [metrics]);
 
   // Update editor content when value prop changes externally
   useEffect(() => {
     if (!viewRef.current) return;
-    
+
     const currentValue = viewRef.current.state.doc.toString();
     if (currentValue !== value) {
       isUpdatingFromProp.current = true;

@@ -5,6 +5,7 @@ interface PromState {
   chartSeries: any[];
   mergedData: any[];
   tableData: TableRowType[];  // NEW: Add this for table view
+  metricOptions: string[]; // NEW
   loading: boolean;
   error: string[];
   activeTab: "table" | "graph";
@@ -14,6 +15,7 @@ const initialState: PromState = {
   chartSeries: [],
   mergedData: [],
   tableData: [],  // NEW: Add this
+  metricOptions: [], // NEW
   loading: false,
   error: [],
   activeTab: "table",
@@ -44,6 +46,9 @@ const prometheusSlice = createSlice({
     setActiveTab: (state, action: PayloadAction<"table" | "graph">) => {
       state.activeTab = action.payload;
     },
+    setMetricOptions: (state, action: PayloadAction<string[]>) => {
+      state.metricOptions = action.payload;
+    },
     clearPrometheus: () => initialState,
   },
 });
@@ -55,6 +60,7 @@ export const {
   setTableData,  // NEW: Export this
   setError,
   setActiveTab,
+  setMetricOptions,
   clearPrometheus,
 } = prometheusSlice.actions;
 

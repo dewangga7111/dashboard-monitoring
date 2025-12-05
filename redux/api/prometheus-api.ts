@@ -5,7 +5,8 @@ import {
   setMergedData,
   setError,
   setActiveTab,
-  setTableData
+  setTableData,
+  setMetricOptions
 } from "@/redux/slices/prometheus-slice";
 import { Query } from "@/types/query";
 import moment from "moment";
@@ -318,4 +319,25 @@ export const fetchPrometheusTableQueries =
       dispatch(setLoading(false));
     }
   };
+
+  export const fetchPrometheusMetricsOptions = () => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(setLoading(true));
+
+    const res = await apiClient.get("http://localhost:9090/api/v1/label/__name__/values");
+    const json = res.data;
+
+    if (json.status === "success") {
+      dispatch(setMetricOptions(json.data));
+    } else {
+      dispatch(setError(["Failed to fetch metrics"]));
+    }
+  } catch (error: any) {
+    console.error("Failed to fetch metrics:", error);
+    dispatch(setError([error?.message || "Metrics fetch failed"]));
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
+
   
