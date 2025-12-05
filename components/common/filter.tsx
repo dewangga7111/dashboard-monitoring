@@ -121,6 +121,7 @@ export default function DynamicFilter({
                               label={field.label}
                               value={value ?? null}
                               onChange={(v: any) => handleChange(field.key, v)}
+                              withTime
                             />
                           );
 

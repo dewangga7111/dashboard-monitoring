@@ -1,14 +1,15 @@
 "use client";
 
 import BigNumberMetric from "@/components/charts/big-number-metric";
-import { Card, CardBody, Chip, Divider, Progress, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
+import { Button, Card, CardBody, Chip, Divider, Progress, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@heroui/react";
 import AppLineChart from "@/components/charts/app-line-chart";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronUp } from "lucide-react";
+import { ChevronUp, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { formatFromMB } from "@/utils/common";
+import DashboardFilter from "@/components/dashboard/filter";
 
-export default function ServerOverviewPage() {
+export default function DashboardOverviewPage() {
   const [isOpenCpu, setIsOpenCpu] = useState(true);
   const [isOpenMemory, setIsOpenMemory] = useState(true);
   const [isOpenDisk, setIsOpenDisk] = useState(true);
@@ -27,20 +28,69 @@ export default function ServerOverviewPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between">
-        <span className="text-gray-600 text-lg font-semibold">Server Name: Production Server</span>
-        <Chip color="success" variant="flat" size="lg">
-          <div className="flex items-center">
-            <div
-              className="rounded-full bg-success mr-1"
-              style={{
-                width: '10px',
-                height: '10px',
-              }}
-            />
-            Online
-          </div>
-        </Chip>
+      <div className="flex justify-between items-center">
+        <span className="text-gray-600 text-lg font-semibold">Dashboard Name: Production Dashboard</span>
+        <div className="flex gap-2 items-center">
+          <DashboardFilter
+            className="w-[345px]"
+            value="24-12-2025, 11:23 - 15:30"
+            onChange={(val) => console.log(val)}
+          />
+          <Tooltip
+            content="Auto refresh interval"
+            placement="bottom"
+            showArrow={true}
+            color="foreground"
+            closeDelay={0}
+            delay={500}
+            offset={-10}
+            crossOffset={15}
+            size="sm"
+          >
+            <Select
+              className="w-[80px]"
+              items={[
+                { key: "off", label: "Off" },
+                { key: "5s", label: "5s" },
+                { key: "10s", label: "10s" },
+                { key: "15s", label: "15s" },
+                { key: "30s", label: "30s" },
+                { key: "1m", label: "1m" },
+                { key: "5m", label: "5m" },
+                { key: "15m", label: "15m" },
+              ]}
+              defaultSelectedKeys={["off"]}
+              onChange={(val) => console.log(val)}
+            >
+              {(item) => <SelectItem>{item.label}</SelectItem>}
+            </Select>
+          </Tooltip>
+          <Tooltip
+            content="Refresh"
+            placement="bottom"
+            showArrow={true}
+            color="foreground"
+            closeDelay={0}
+            delay={500}
+            size="sm"
+          >
+            <Button isIconOnly aria-label="Refresh" className="bg-[#F4F4F5]">
+              <RefreshCw className="text-gray-500" />
+            </Button>
+          </Tooltip>
+          <Chip color="success" variant="flat" size="lg">
+            <div className="flex items-center">
+              <div
+                className="rounded-full bg-success mr-1"
+                style={{
+                  width: '10px',
+                  height: '10px',
+                }}
+              />
+              Online
+            </div>
+          </Chip>
+        </div>
       </div>
       <div className="w-full">
         <Divider />

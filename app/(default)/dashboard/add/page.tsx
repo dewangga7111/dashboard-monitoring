@@ -16,13 +16,13 @@ import constants from "@/utils/constants"
 
 export default function AddServerPage() {
   const router = useRouter();
-  const store = useSelector((state: RootState) => state.server);
+  const store = useSelector((state: RootState) => state.dashboard);
   const { confirm } = useConfirmation();
 
   useEffect(() => {
     if (store.success) {
       showSuccessToast(constants.toast.SUCCESS_SAVE)
-      router.push(constants.path.SERVER)
+      router.push(constants.path.DASHBOARD)
     } else if (store.error) {
       showErrorToast(store.error)
     }
@@ -41,7 +41,7 @@ export default function AddServerPage() {
 
   const doSave = (data: any) => {
     showSuccessToast(constants.toast.SUCCESS_SAVE);
-    router.push(constants.path.SERVER);
+    router.push(constants.path.DASHBOARD);
   }
 
   return (
@@ -53,8 +53,8 @@ export default function AddServerPage() {
               <div className={inputContainer()}>
                 <AppTextInput
                   isRequired
-                  key='server_name'
-                  name='server_name'
+                  key='name'
+                  name='name'
                   label='Name'
                 />
                 <AppTextInput

@@ -100,14 +100,14 @@
 import { AppDispatch, RootState } from "@/redux/store";
 import {
   setLoading,
-  setServer,
-  errorServer,
-  resetServer,
-  successServer,
-} from "@/redux/slices/server-slice";
-import { Server } from "@/types/server";
+  setDashboard,
+  errorDashboard,
+  resetDashboard,
+  successDashboard,
+} from "@/redux/slices/dashboard-slice";
+import { Dashboard } from "@/types/dashboard";
 import { TableFilter } from "@/types/table";
-import { serversList } from "@/dummy/server";
+import { dashboardList } from "@/dummy/dashboard";
 
 // ---- MOCK DATA ----
 
@@ -115,7 +115,7 @@ const simulateDelay = async (ms = 500) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 // ---- MOCKED ENDPOINTS ----
-export const fetchServers =
+export const fetchDashboard =
   (param: TableFilter) =>
     async (dispatch: AppDispatch) => {
       try {
@@ -126,17 +126,17 @@ export const fetchServers =
         const page = param.page || 1;
         const skip = (page - 1) * limit;
 
-        const pagedServers = serversList.slice(skip, skip + limit);
+        const pagedServers = dashboardList.slice(skip, skip + limit);
 
         // 🧠 Simulate real API response
         const response = {
           data: {
             data: pagedServers,
-            total: serversList.length,
+            total: dashboardList.length,
           },
         };
 
-        dispatch(setServer({
+        dispatch(setDashboard({
           data: response.data?.data,
           params: { ...param },
           paging: {
@@ -147,38 +147,38 @@ export const fetchServers =
           },
         }));
       } catch (error: any) {
-        dispatch(errorServer(error.message || "Failed to fetch mock servers"));
+        dispatch(errorDashboard(error.message || "Failed to fetch mock servers"));
       }
     };
 
-export const createServer =
-  (server: Omit<Server, "id">) => async (dispatch: AppDispatch) => {
+export const createDashboard =
+  (dashboard: Omit<Dashboard, "id">) => async (dispatch: AppDispatch) => {
     try {
       dispatch(setLoading(true));
       await simulateDelay();
 
-      const newServer: Server = {
-        id: serversList.length ? Math.max(...serversList.map(s => s.id)) + 1 : 1,
-        ...server,
+      const newDashboard: Dashboard = {
+        id: dashboardList.length ? Math.max(...dashboardList.map(s => s.id)) + 1 : 1,
+        ...dashboard,
       };
 
-      serversList.push(newServer);
+      dashboardList.push(newDashboard);
 
       const response = { status: 200, data: { message: "Role created" } };
       if (response.status === 200) {
-        dispatch(successServer());
+        dispatch(successDashboard());
       } else {
-        dispatch(errorServer(response.data?.message || "Failed to create role"));
+        dispatch(errorDashboard(response.data?.message || "Failed to create role"));
       }
     } catch (error: any) {
-      dispatch(errorServer(error.message || "Failed to create mock role"));
+      dispatch(errorDashboard(error.message || "Failed to create mock role"));
     } finally {
-      dispatch(resetServer());
+      dispatch(resetDashboard());
     }
   };
 
-export const updateServer =
-  (id: number, server: Partial<Server>) => async (dispatch: AppDispatch) => {
+export const updateDashboard =
+  (id: number, dashboard: Partial<Dashboard>) => async (dispatch: AppDispatch) => {
     try {
       dispatch(setLoading(true));
       await simulateDelay();
@@ -186,18 +186,18 @@ export const updateServer =
 
       const response = { status: 200, data: { message: "Role updated" } };
       if (response.status === 200) {
-        dispatch(successServer());
+        dispatch(successDashboard());
       } else {
-        dispatch(errorServer(response.data?.message || "Failed to update role"));
+        dispatch(errorDashboard(response.data?.message || "Failed to update role"));
       }
     } catch (error: any) {
-      dispatch(errorServer(error.message || "Failed to update mock role"));
+      dispatch(errorDashboard(error.message || "Failed to update mock role"));
     } finally {
-      dispatch(resetServer());
+      dispatch(resetDashboard());
     }
   };
 
-export const deleteServer =
+export const deleteDashboard =
   (id: number) => async (dispatch: AppDispatch, getState: () => RootState) => {
     try {
       dispatch(setLoading(true));
@@ -207,16 +207,16 @@ export const deleteServer =
 
       const response = { status: 200, data: { message: "Role deleted" } };
       if (response.status === 200) {
-        dispatch(successServer());
+        dispatch(successDashboard());
       } else {
-        dispatch(errorServer(response.data?.message || "Failed to delete role"));
+        dispatch(errorDashboard(response.data?.message || "Failed to delete role"));
       }
 
       const state = getState();
-      const lastParams = (state.roles as any)?.params || {};
-      dispatch(fetchServers(lastParams));
+      const lastParams = (state.dashboard as any)?.params || {};
+      dispatch(fetchDashboard(lastParams));
     } catch (error: any) {
-      dispatch(errorServer(error.message || "Failed to delete mock role"));
+      dispatch(errorDashboard(error.message || "Failed to delete mock role"));
     }
   };
 

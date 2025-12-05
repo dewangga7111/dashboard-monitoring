@@ -4,20 +4,20 @@ export const breadcrumbsItems = [
     path: "/",
   },
   {
-    label: "Server",
-    path: "/server",
+    label: "Dashboard",
+    path: "/dashboard",
     children: [
       {
-        label: "Server Overview",
-        path: "/server/overview/:id",
+        label: "Dashboard Overview",
+        path: "/dashboard/overview/:id",
       },
       {
-        label: "Add Server",
-        path: "/server/add",
+        label: "Add Dashboard",
+        path: "/dashboard/add",
       },
       {
-        label: "Edit Server",
-        path: "/server/edit/:id",
+        label: "Edit Dashboard",
+        path: "/dashboard/edit/:id",
       }
     ]
   },
@@ -38,6 +38,10 @@ export const breadcrumbsItems = [
         path: "/logs/edit/:id",
       }
     ]
+  },
+  {
+    label: "Query",
+    path: "/query",
   },
   {
     label: "Network",

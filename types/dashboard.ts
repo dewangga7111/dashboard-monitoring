@@ -1,6 +1,6 @@
-export type Server = {
+export type Dashboard = {
   id: number;
-  server_name: string;
+  name: string;
   host: string;
   description: string;
   status: "online" | "offline";

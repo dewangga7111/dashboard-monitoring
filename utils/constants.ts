@@ -3,19 +3,21 @@ const moduleConfig = {
     MENU_ID_USER: "USERS_PAGE",
     MENU_ID_ROLE: "ROLES_PAGE",
     MENU_ID_DIVISION: "DIVISION_PAGE",
-    MENU_ID_SERVER: "SERVER_PAGE",
     MENU_ID_NETWORK: "NETWORK_PAGE",
     MENU_ID_LOGS: "LOGS_PAGE",
+    MENU_ID_DASHBOARD: "DASHBOARD_PAGE",
+    MENU_ID_QUERY: "QUERY_PAGE"
   },
   path: {
     USERS: "/users",
     ROLES: "/roles",
     DIVISION: "/division",
-    SERVER: "/server",
+    DASHBOARD: "/dashboard",
     NETWORK: "/network",
     LOGS: "/logs",
     UNAUTHORIZED: "/misc/403",
     LOGIN: "/auth/login",
+    QUERY: "/query"
   },
   confirmation: {
     DELETE: "Are you sure you want to delete this data?",

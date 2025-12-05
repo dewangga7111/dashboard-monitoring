@@ -1,6 +1,6 @@
 // src/redux/slices/users-slice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Server } from "@/types/server";
+import { Server } from "@/types/dashboard";
 import { TableFilter, TablePaging } from "@/types/table";
 
 interface NetworkState {

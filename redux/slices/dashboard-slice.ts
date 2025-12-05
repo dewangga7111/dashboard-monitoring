@@ -1,10 +1,10 @@
 // src/redux/slices/users-slice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Server } from "@/types/server";
+import { Dashboard } from "@/types/dashboard";
 import { TableFilter, TablePaging } from "@/types/table";
 
-interface ServerState {
-  data: Server[];
+interface DashboardState {
+  data: Dashboard[];
   params: TableFilter;
   paging: TablePaging;
   loading: boolean;
@@ -12,7 +12,7 @@ interface ServerState {
   error: string;
 }
 
-const initialState: ServerState = {
+const initialState: DashboardState = {
   data: [],
   params: {},
   paging: {
@@ -26,17 +26,17 @@ const initialState: ServerState = {
   error: '',
 };
 
-const serverSlice = createSlice({
-  name: "server",
+const dashboardSlice = createSlice({
+  name: "dashboard",
   initialState,
   reducers: {
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-    setServer: (
+    setDashboard: (
       state,
       action: PayloadAction<{
-        data?: Server[],
+        data?: Dashboard[],
         params?: TableFilter,
         paging?: TablePaging;
       }>
@@ -49,21 +49,21 @@ const serverSlice = createSlice({
       state.loading = false;
       state.error = '';
     },
-    errorServer: (state, action: PayloadAction<string>) => {
+    errorDashboard: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
       state.loading = false;
     },
-    successServer: (state) => {
+    successDashboard: (state) => {
       state.success = true;
       state.loading = false;
     },
-    resetServer: (state) => {
+    resetDashboard: (state) => {
       state.success = false;
       state.error = '';
     },
-    clearServer: () => initialState,
+    clearDashboard: () => initialState,
   },
 });
 
-export const { setLoading, setServer, successServer, errorServer, resetServer, clearServer } = serverSlice.actions;
-export default serverSlice.reducer;
+export const { setLoading, setDashboard, successDashboard, errorDashboard, resetDashboard, clearDashboard } = dashboardSlice.actions;
+export default dashboardSlice.reducer;

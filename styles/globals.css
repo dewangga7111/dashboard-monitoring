@@ -5,3 +5,13 @@
 .heroui-popover[aria-hidden="false"] {
   z-index: 1000 !important; /* ensure popovers are below modals */
 }
+
+.cm-editor.cm-focused {
+  outline: none !important;
+}
+
+.cm-editor {
+  border: 1px solid #e2e8f0; /* Tailwind: border-gray-300 */
+  border-radius: 6px;
+  padding: 4px;
+}

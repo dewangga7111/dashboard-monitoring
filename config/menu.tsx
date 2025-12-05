@@ -1,4 +1,5 @@
-import { Home, Settings, ScrollText, LogOut, Server, Network } from "lucide-react";
+import constants from "@/utils/constants";
+import { Home, Settings, ScrollText, LogOut, Server, Network, SearchCode } from "lucide-react";
 import { ReactNode } from "react";
 
 type MenuItem = {
@@ -17,19 +18,25 @@ export const menus: MenuItem[] = [
     path: "/",
   },
   {
-    key: "SERVER_PAGE",
-    label: "Server",
+    key: constants.menu.MENU_ID_DASHBOARD,
+    label: "Dashboard",
     icon: <Server size={18} />,
-    path: "/server",
+    path: "/dashboard",
   },
   {
-    key: "NETWORK_PAGE",
+    key: constants.menu.MENU_ID_QUERY,
+    label: "Query",
+    icon: <SearchCode size={18} />,
+    path: "/query",
+  },
+  {
+    key: constants.menu.MENU_ID_NETWORK,
     label: "Network",
     icon: <Network size={18} />,
     path: "/network",
   },
   {
-    key: "LOGS_PAGE",
+    key: constants.menu.MENU_ID_LOGS,
     label: "Logs",
     icon: <ScrollText size={18} />,
     path: "/logs",
@@ -40,17 +47,17 @@ export const menus: MenuItem[] = [
     icon: <Settings size={18} />,
     children: [
       {
-        key: "USERS_PAGE",
+        key: constants.menu.MENU_ID_USER,
         label: "Users",
         path: "/users",
       },
       {
-        key: "ROLES_PAGE",
+        key: constants.menu.MENU_ID_ROLE,
         label: "Roles",
         path: "/roles",
       },
       {
-        key: "DIVISION_PAGE",
+        key: constants.menu.MENU_ID_DIVISION,
         label: "Division",
         path: "/division",
       },

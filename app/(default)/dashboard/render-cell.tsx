@@ -43,7 +43,7 @@ export default function RolesRenderCell({ item, columnKey }: RenderCellProps) {
               key="edit"
               startContent={<Pencil size={13} />}
               onPress={() => {
-                router.push(`${constants.path.ROLES}/edit/${item.id}`);
+                router.push(`${constants.path.DASHBOARD}/edit/${item.id}`);
               }}
             >
               Edit
@@ -68,9 +68,9 @@ export default function RolesRenderCell({ item, columnKey }: RenderCellProps) {
         </ManagedPopover>
       );
     
-    case "server_name":
+    case "name":
       return (
-        <Link href={`${constants.path.SERVER}/overview/${item.id}`} className="text-sm" underline="hover">{cellValue}</Link>
+        <Link href={`${constants.path.DASHBOARD}/overview/${item.id}`} className="text-sm" underline="hover">{cellValue}</Link>
       )
 
     case "status":

@@ -8,7 +8,6 @@ import { ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { formatFromMB } from "@/utils/common";
 import AppAutocomplete from "@/components/common/app-autocomplete";
-import { serversList } from "@/dummy/server";
 import AppGaugeChart from "@/components/charts/app-gauge-chart";
 import AppPieChart from "@/components/charts/app-pie-chart";
 import AppBarChart from "@/components/charts/app-bar-chart";
@@ -33,7 +32,7 @@ export default function ServerOverviewPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between">
-        <AppAutocomplete className="w-sm" items={serversList} itemLabel={"server_name"} itemValue={"id"} placeholder="Select Server..." />
+        <AppAutocomplete className="w-sm" items={[]} itemLabel={"server_name"} itemValue={"id"} placeholder="Select Server..." />
       </div>
       <div className="w-full">
         <Divider />

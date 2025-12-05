@@ -10,24 +10,24 @@ import constants from "@/utils/constants";
 import { TableColumnType, TableRowType } from "@/types/table";
 import { FilterField } from "@/types/filter";
 import { AppDispatch, RootState } from "@/redux/store";
-import { fetchServers } from "@/redux/api/server-api";
+import { fetchDashboard } from "@/redux/api/dashboard-api";
 import { useLoading } from "@/hooks/useLoading";
 import RenderCell from "./render-cell";
-import { clearServer } from "@/redux/slices/server-slice";
+import { clearDashboard } from "@/redux/slices/dashboard-slice";
 
-export default function ServerPage() {
+export default function DashboardPage() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const store = useSelector((state: RootState) => state.server);
-  const isLoading = useLoading("server");
+  const store = useSelector((state: RootState) => state.dashboard);
+  const isLoading = useLoading("dashboard");
 
   const fields: FilterField[] = [
-    { type: "input", key: "server_name", label: "Name" },
+    { type: "input", key: "name", label: "Name" },
   ];
 
   const columns: TableColumnType[] = [
     { key: "action", label: "Action", width: 50, align: "center" },
-    { key: "server_name", label: "Name", width: 200 },
+    { key: "name", label: "Name", width: 200 },
     { key: "host", label: "Host" },
     { key: "description", label: "Description" },
     { key: "status", label: "Status" },
@@ -38,10 +38,10 @@ export default function ServerPage() {
   );
 
   useEffect(() => {
-    dispatch(fetchServers({ ...store.params, ...store.paging }));
+    dispatch(fetchDashboard({ ...store.params, ...store.paging }));
 
     return () => {
-      dispatch(clearServer());
+      dispatch(clearDashboard());
     };
   }, [dispatch]);
 
@@ -50,10 +50,10 @@ export default function ServerPage() {
       <Filter
         fields={fields}
         onFilter={(data) => {
-          dispatch(fetchServers({ ...data, ...store.paging, page: 1 }));
+          dispatch(fetchDashboard({ ...data, ...store.paging, page: 1 }));
         }}
         onClear={() => {
-          dispatch(fetchServers({ ...store.paging, page: 1 }));
+          dispatch(fetchDashboard({ ...store.paging, page: 1 }));
         }}
       />
       <Datatable
@@ -65,9 +65,9 @@ export default function ServerPage() {
         totalPage={store.paging.totalPage!}
         totalRows={store.paging.totalRows!}
         onPageChange={(page: number) => {
-          dispatch(fetchServers({ ...store.params, ...store.paging, page }));
+          dispatch(fetchDashboard({ ...store.params, ...store.paging, page }));
         }}
-        doAdd={() => router.push(`${constants.path.SERVER}/add`)}
+        doAdd={() => router.push(`${constants.path.DASHBOARD}/add`)}
       />
     </div>
   );
