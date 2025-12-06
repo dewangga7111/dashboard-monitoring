@@ -50,6 +50,7 @@ export default function DashboardPage() {
   const [end, setEnd] = useState<string>(moment().toISOString());
   const [refreshInterval, setRefreshInterval] = useState("off");
   const [dashboardName, setDashboardName] = useState("My Dashboard");
+  const [tempDashboardName, setTempDashboardName] = useState("");
 
   // Update grid width on resize
   useEffect(() => {
@@ -127,6 +128,21 @@ export default function DashboardPage() {
       }
     };
   }, [refreshInterval]);
+
+  const handleCancel = () => {
+    confirm({
+      message: constants.confirmation.CLOSE_DRAWER,
+      confirmText: "Discard Changes",
+      cancelText: "Cancel",
+      onConfirm: () => {
+        setDashboardName(tempDashboardName);
+        dispatch(setVisualizations(tempVisualizations));
+        setEditMode(false)
+        setTempVisualizations([]);
+        setTempDashboardName("");
+      },
+    });
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -212,11 +228,7 @@ export default function DashboardPage() {
                   color="default"
                   variant="flat"
                   size="sm"
-                  onPress={() => {
-                    dispatch(setVisualizations(tempVisualizations));
-                    setEditMode(false)
-                    setTempVisualizations([]);
-                  }}
+                  onPress={() => handleCancel()}
                 >
                   Cancel
                 </Button>
@@ -279,6 +291,7 @@ export default function DashboardPage() {
                   color="primary"
                   size="sm"
                   onPress={() => {
+                    setTempDashboardName(dashboardName);
                     setTempVisualizations(store.visualizations)
                     setEditMode(true);
                   }}
@@ -307,6 +320,7 @@ export default function DashboardPage() {
                   setOpenDrawer(true);
                 }}
                 startContent={<Plus size={18} />}
+                variant="bordered"
               >
                 Add Visualization
               </Button>

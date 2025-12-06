@@ -20,7 +20,6 @@ const dashboardVisualizationSlice = createSlice({
   initialState,
   reducers: {
     setVisualizations: (state, action: PayloadAction<VisualizationData[]>) => {
-      console.log(action.payload)
       state.visualizations = action.payload;
     },
     addVisualization: (state, action: PayloadAction<VisualizationData>) => {
