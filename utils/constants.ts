@@ -3,7 +3,6 @@ const moduleConfig = {
     MENU_ID_USER: "USERS_PAGE",
     MENU_ID_ROLE: "ROLES_PAGE",
     MENU_ID_DIVISION: "DIVISION_PAGE",
-    MENU_ID_NETWORK: "NETWORK_PAGE",
     MENU_ID_LOGS: "LOGS_PAGE",
     MENU_ID_DASHBOARD: "DASHBOARD_PAGE",
     MENU_ID_QUERY: "QUERY_PAGE"
@@ -13,7 +12,6 @@ const moduleConfig = {
     ROLES: "/roles",
     DIVISION: "/division",
     DASHBOARD: "/dashboard",
-    NETWORK: "/network",
     LOGS: "/logs",
     UNAUTHORIZED: "/misc/403",
     LOGIN: "/auth/login",
@@ -21,6 +19,7 @@ const moduleConfig = {
   },
   confirmation: {
     DELETE: "Are you sure you want to delete this data?",
+    CLOSE_DRAWER: "You have unapplied changes in this visualization. Are you sure you want to discard these changes? Changes cannot be recovered.",
     SAVE: "Are you sure you want to save this data?",
     LOGOUT: "Are you sure you want to logout?"
   },

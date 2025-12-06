@@ -10,8 +10,17 @@
   outline: none !important;
 }
 
-.cm-editor {
-  border: 1px solid #e2e8f0; /* Tailwind: border-gray-300 */
-  border-radius: 6px;
-  padding: 4px;
+.react-grid-item.react-grid-placeholder {
+  background: rgba(59, 130, 246, 0.3) !important; /* Blue with transparency */
+  border: 2px dashed #3b82f6;
+  border-radius: 8px;
+}
+
+.react-grid-item.react-dragging {
+  opacity: 0.8;
+  z-index: 100;
+}
+
+.react-grid-item.react-dragging .drag-handle {
+  cursor: grabbing !important;
 }

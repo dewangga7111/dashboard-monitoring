@@ -6,6 +6,7 @@ import dashboardReducer from "./slices/dashboard-slice";
 import networkReducer from "./slices/network-slice";
 import logsReducer from "./slices/logs-slice";
 import prometheusReducer from "./slices/prometheus-slice";
+import dashboardVisualizationReducer from "./slices/dashboard-visualization-slice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     network: networkReducer,
     logs: logsReducer,
     prometheus: prometheusReducer,
+    dashboardVisualization: dashboardVisualizationReducer,
   },
 });
 

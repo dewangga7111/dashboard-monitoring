@@ -5,24 +5,26 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChartLine, Plus, RefreshCw, Table2, Trash2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
-import DashboardFilter from "@/components/dashboard/filter";
+import DashboardFilterDateRange from "@/components/dashboard/filter-date-range";
 import QueryForm from "@/components/query/query-form";
 import QueryTableView from "@/components/query/query-table-view";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from "recharts";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPrometheusQueries, fetchPrometheusTableQueries } from "@/redux/api/prometheus-api";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Query } from "@/types/query";
 import moment from "moment";
-import AppLineChart from "@/components/charts/app-line-chart";
+import VizLineChart from "@/components/charts/viz-line-chart";
+import DashboardFilterDate from "@/components/dashboard/filter-date";
+import DashboardAutoRefresh from "@/components/dashboard/filter-auto-refresh";
+import { clearPrometheus } from "@/redux/slices/prometheus-slice";
+import { v4 as uuidv4 } from "uuid";
 
 export default function QueryPage() {
   const { theme } = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const store = useSelector((state: RootState) => state.prometheus);
 
-  const [queries, setQueries] = useState<Query[]>([{ id: 1, expression: "", legend: "" }]);
-  const [nextId, setNextId] = useState(2);
+  const [queries, setQueries] = useState<Query[]>([{ id: uuidv4(), expression: "", legend: "" }]);
   const [start, setStart] = useState<string>(moment().subtract(1, "hour").toISOString());
   const [end, setEnd] = useState<string>(moment().toISOString());
   const [refreshInterval, setRefreshInterval] = useState("off");
@@ -30,46 +32,11 @@ export default function QueryPage() {
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Parse interval string to milliseconds
-  const getIntervalMs = (interval: string): number | null => {
-    const intervalMap: Record<string, number> = {
-      "off": 0,
-      "5s": 5000,
-      "10s": 10000,
-      "15s": 15000,
-      "30s": 30000,
-      "1m": 60000,
-      "5m": 300000,
-      "15m": 900000,
+  useEffect(() => {
+    return () => {
+      dispatch(clearPrometheus());
     };
-    return intervalMap[interval] || null;
-  };
-
-  // Execute query fetch based on active tab
-  const executeQuery = (updateTimeRange: boolean = false) => {
-    const hasValidQuery = queries.some(q => q.expression.trim());
-    if (!hasValidQuery) return;
-
-    if (activeTab === "table") {
-      // Use instant query for table view
-      dispatch(fetchPrometheusTableQueries(queries));
-    } else {
-      // Use range query for graph view
-      let queryStart = start;
-      let queryEnd = end;
-
-      // If updating time range, recalculate based on the original duration
-      if (updateTimeRange) {
-        const duration = moment(end).diff(moment(start));
-        queryEnd = moment().toISOString();
-        queryStart = moment().subtract(duration, 'milliseconds').toISOString();
-        setStart(queryStart);
-        setEnd(queryEnd);
-      }
-
-      dispatch(fetchPrometheusQueries(queries, queryStart, queryEnd));
-    }
-  };
+  }, [dispatch]);
 
   // Setup auto-refresh interval
   useEffect(() => {
@@ -100,34 +67,70 @@ export default function QueryPage() {
   }, [refreshInterval, activeTab]);
 
   const handleAddQuery = () => {
-    setQueries([...queries, { id: nextId, expression: "", legend: "" }]);
-    setNextId(nextId + 1);
+    setQueries([...queries, { id: uuidv4(), expression: "", legend: "" }]);
   };
 
-  const handleRemoveQuery = (id: number) => {
+  const handleRemoveQuery = (id: string) => {
     if (queries.length > 1) {
       setQueries(queries.filter(query => query.id !== id));
     }
   };
 
-  const handleExpressionChange = (id: number, expression: string) => {
+  const handleExpressionChange = (id: string, expression: string) => {
     setQueries(prevQueries => prevQueries.map(query =>
       query.id === id ? { ...query, expression } : query
     ));
   };
 
-  const handleLegendChange = (id: number, legend: string) => {
+  const handleLegendChange = (id: string, legend: string) => {
     setQueries(prevQueries => prevQueries.map(query =>
       query.id === id ? { ...query, legend } : query
     ));
   };
 
-  const handleRefreshIntervalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRefreshInterval(e.target.value);
-  };
-
   const handleTabChange = (key: React.Key) => {
     setActiveTab(key as "table" | "graph");
+  };
+
+  // Parse interval string to milliseconds
+  const getIntervalMs = (interval: string): number | null => {
+    const intervalMap: Record<string, number> = {
+      "off": 0,
+      "5s": 5000,
+      "10s": 10000,
+      "15s": 15000,
+      "30s": 30000,
+      "1m": 60000,
+      "5m": 300000,
+      "15m": 900000,
+    };
+    return intervalMap[interval] || null;
+  };
+
+  // Execute query fetch based on active tab
+  const executeQuery = (updateTimeRange: boolean = false) => {
+    const hasValidQuery = queries.some(q => q.expression.trim());
+    if (!hasValidQuery) return;
+
+    if (activeTab === "table") {
+      // Use instant query for table view
+      dispatch(fetchPrometheusTableQueries(queries, end));
+    } else {
+      // Use range query for graph view
+      let queryStart = start;
+      let queryEnd = end;
+
+      // If updating time range, recalculate based on the original duration
+      if (updateTimeRange) {
+        const duration = moment(end).diff(moment(start));
+        queryEnd = moment().toISOString();
+        queryStart = moment().subtract(duration, 'milliseconds').toISOString();
+        setStart(queryStart);
+        setEnd(queryEnd);
+      }
+
+      dispatch(fetchPrometheusQueries(queries, queryStart, queryEnd));
+    }
   };
 
   return (
@@ -139,12 +142,13 @@ export default function QueryPage() {
           variant="solid"
           selectedKey={activeTab}
           onSelectionChange={handleTabChange}
+          size="sm"
         >
           <Tab
             key="table"
             title={
               <div className="flex items-center space-x-2">
-                <Table2 />
+                <Table2 size={18} />
                 <span>Table</span>
               </div>
             }
@@ -153,7 +157,7 @@ export default function QueryPage() {
             key="graph"
             title={
               <div className="flex items-center space-x-2">
-                <ChartLine />
+                <ChartLine size={18} />
                 <span>Graph</span>
               </div>
             }
@@ -161,63 +165,28 @@ export default function QueryPage() {
         </Tabs>
         <div className="flex gap-2 items-center">
           {/* Only show time range filter for graph view */}
-          {activeTab === "graph" && (
-            <DashboardFilter
-              className="w-[350px]"
+          {activeTab === "graph" ? (
+            <DashboardFilterDateRange
               value={{ start, end }}
               onChange={(val) => {
                 setStart(val?.start || "");
                 setEnd(val?.end || "");
               }}
             />
+          ) : (
+            <DashboardFilterDate
+              value={end}
+              onChange={(val) => {
+                setStart(val || "");
+                setEnd(val || "");
+              }}
+            />
           )}
-          <Tooltip
-            content="Auto refresh interval"
-            placement="bottom"
-            showArrow={true}
-            color="foreground"
-            closeDelay={0}
-            delay={500}
-            offset={-10}
-            crossOffset={15}
-            size="sm"
-          >
-            <Select
-              className="w-[80px]"
-              items={[
-                { key: "off", label: "Off" },
-                { key: "5s", label: "5s" },
-                { key: "10s", label: "10s" },
-                { key: "15s", label: "15s" },
-                { key: "30s", label: "30s" },
-                { key: "1m", label: "1m" },
-                { key: "5m", label: "5m" },
-                { key: "15m", label: "15m" },
-              ]}
-              selectedKeys={[refreshInterval]}
-              onChange={handleRefreshIntervalChange}
-            >
-              {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
-            </Select>
-          </Tooltip>
-          <Tooltip
-            content="Refresh"
-            placement="bottom"
-            showArrow={true}
-            color="foreground"
-            closeDelay={0}
-            delay={500}
-            size="sm"
-          >
-            <Button
-              isIconOnly
-              aria-label="Refresh"
-              className="bg-[#F4F4F5]"
-              onPress={() => executeQuery()}
-            >
-              <RefreshCw className="text-gray-500" />
-            </Button>
-          </Tooltip>
+          <DashboardAutoRefresh
+            refreshInterval={refreshInterval}
+            onIntervalChange={(interval: string) => setRefreshInterval(interval)}
+            onRefresh={executeQuery}
+          />
         </div>
       </div>
 
@@ -291,16 +260,18 @@ export default function QueryPage() {
             />
           ) : (
             store.mergedData.length > 0 ? (
-              <AppLineChart
-                data={store.mergedData}
-                chartSeries={store.chartSeries}
-                loading={store.loading}
-              />
+              <div className="h-[500px]">
+                <VizLineChart
+                  data={store.mergedData}
+                  chartSeries={store.chartSeries}
+                  loading={store.loading}
+                />
+              </div>
             ) : (
               store.error.length === 0 && (
                 <div className="flex items-center justify-center h-[500px]">
                   {store.loading ? (
-                    <Spinner size="lg" />
+                    <Spinner size="lg" variant="wave" />
                   ) : queries.some(q => q.expression) ? (
                     "Query results will appear here"
                   ) : (

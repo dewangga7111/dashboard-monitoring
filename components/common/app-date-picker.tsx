@@ -53,6 +53,7 @@ export default function AppDatePicker({
             classNames={{
               input: "text-left ml-1",
             }}
+            size="sm"
           />
         </div>
         <PopoverContent className="p-0">

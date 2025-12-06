@@ -10,7 +10,7 @@ import {
 } from "@heroui/react";
 import { ChevronUp, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { button } from "@/utils/primitives";
+import { button, inputLabel } from "@/utils/primitives";
 import QueryInput from "./query-input";
 import AppTextInput from "../common/app-text-input";
 
@@ -81,7 +81,7 @@ export default function QueryForm({
                   onChange={(e) => onChangeLegend?.(e.target.value)}
                 />
                 <div className="w-full">
-                  <span className="text-small text-foreground">PromQL Expression</span>
+                  <span className={inputLabel()}>PromQL Expression</span>
                   <div className="w-full flex items-center gap-4">
                     <div className="w-full">
                       <QueryInput value={valueExpression} onChange={onChangeExpression} />
@@ -91,6 +91,7 @@ export default function QueryForm({
                       color="primary"
                       className={button()}
                       startContent={<Play size={30} />}
+                      size="sm"
                     >
                       Execute
                     </Button>

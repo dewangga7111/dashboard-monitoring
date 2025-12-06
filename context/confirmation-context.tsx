@@ -72,10 +72,10 @@ export const ConfirmationProvider = ({ children }: { children: ReactNode }) => {
             <p className="text-default-600">{message}</p>
           </ModalBody>
           <ModalFooter className="flex justify-center gap-4">
-            <Button variant="flat" color="primary" onPress={handleCancel}>
+            <Button className="w-full" variant="flat" color="primary" onPress={handleCancel}>
               {cancelText}
             </Button>
-            <Button color="primary" onPress={handleConfirm}>
+            <Button className="w-full" color="primary" onPress={handleConfirm}>
               {confirmText}
             </Button>
           </ModalFooter>

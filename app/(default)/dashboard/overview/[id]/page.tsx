@@ -1,13 +1,13 @@
 "use client";
 
-import BigNumberMetric from "@/components/charts/big-number-metric";
+import BigNumberMetric from "@/components/charts/viz-stat-chart";
 import { Button, Card, CardBody, Chip, Divider, Progress, Select, SelectItem, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@heroui/react";
-import AppLineChart from "@/components/charts/app-line-chart";
+import VizLineChart from "@/components/charts/viz-line-chart";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronUp, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { formatFromMB } from "@/utils/common";
-import DashboardFilter from "@/components/dashboard/filter";
+import DashboardFilter from "@/components/dashboard/filter-date-range";
 
 export default function DashboardOverviewPage() {
   const [isOpenCpu, setIsOpenCpu] = useState(true);
@@ -137,13 +137,13 @@ export default function DashboardOverviewPage() {
               data={[2, 3, 4, 5, 4.2, 4.5, 4.0, 4.3]}
             />
             <div className="col-span-2">
-              <AppLineChart
+              <VizLineChart
                 title="CPU Usage"
                 data={cpuData}
                 ySuffix="%"
               />
             </div>
-            <AppLineChart
+            <VizLineChart
               title="Load Average"
               data={loadAverageData}
               ySuffix="%"
@@ -183,7 +183,7 @@ export default function DashboardOverviewPage() {
               data={[2, 3, 4, 5, 4.2, 4.5, 4.0, 4.3]}
             />
             <div className="col-span-3">
-              <AppLineChart
+              <VizLineChart
                 title="Memory Usage"
                 data={memoryUsageData}
                 withArea={true}
@@ -221,7 +221,7 @@ export default function DashboardOverviewPage() {
             className="grid lg:grid-cols-4 gap-4 w-full"
           >
             <div className="col-span-2">
-              <AppLineChart
+              <VizLineChart
                 title="DISK I/O"
                 data={diskIOData}
                 ySuffix="MB/s"
@@ -291,7 +291,7 @@ export default function DashboardOverviewPage() {
             className="grid lg:grid-cols-4 gap-4 w-full"
           >
             <div className="col-span-2">
-              <AppLineChart
+              <VizLineChart
                 title="Network Traffic"
                 data={networkTrafficData}
                 ySuffix="kb/s"
@@ -299,7 +299,7 @@ export default function DashboardOverviewPage() {
               />
             </div>
             <div className="col-span-2">
-              <AppLineChart
+              <VizLineChart
                 title="Network Errors and Dropped Packets"
                 data={networkErrorsData}
                 ySuffix="p/s"

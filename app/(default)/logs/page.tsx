@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Button, Card, CardBody, Divider, Listbox, ListboxItem, ScrollShadow, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import { dummyLogs, dummyLogsJson } from "@/dummy/logs";
-import AppLineChart from "@/components/charts/app-line-chart";
+import VizLineChart from "@/components/charts/viz-line-chart";
 import { useMemo } from "react";
 import { formatK } from "@/utils/common";
 import { Copy, EllipsisVertical, Pencil, PlusIcon, Trash2 } from "lucide-react";
@@ -165,7 +165,7 @@ export default function LogsPage() {
                   </Table>
                 </div>
                 <div className="col-span-3">
-                  <AppLineChart
+                  <VizLineChart
                     title=""
                     data={loadAverageData}
                     showLegend={false}

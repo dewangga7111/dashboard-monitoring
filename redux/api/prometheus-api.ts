@@ -12,19 +12,7 @@ import { Query } from "@/types/query";
 import moment from "moment";
 import { apiClient } from "./api-client";
 import { TableRowType } from "@/types/table";
-
-interface PrometheusResponse {
-  status: string;
-  data?: {
-    resultType: string;
-    result: Array<{
-      metric: Record<string, string>;
-      value: [number, string]; // [timestamp, value]
-    }>;
-  };
-  error?: string;
-  errorType?: string;
-}
+import { PrometheusResponse } from "@/types/prometheus";
 
 export const fetchPrometheusQueries =
   (queries: Query[], start: string, end: string) => async (dispatch: AppDispatch) => {
@@ -212,7 +200,7 @@ export const fetchPrometheusQueries =
 
 
 export const fetchPrometheusTableQueries =
-  (queries: Query[]) => async (dispatch: AppDispatch) => {
+  (queries: Query[], time: string) => async (dispatch: AppDispatch) => {
     try {
       dispatch(setLoading(true));
       dispatch(setError([]));
@@ -229,7 +217,7 @@ export const fetchPrometheusTableQueries =
             { 
               params: {
                 query: query.expression,
-                time: moment().unix() // Current time for instant query
+                time: moment(time).unix() // Current time for instant query
               }
             }
           );

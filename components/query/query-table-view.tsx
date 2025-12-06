@@ -20,7 +20,7 @@ export default function PrometheusTableView({ data, loading }: PrometheusTableVi
   if (loading) {
     return (
       <div className="flex items-center justify-center h-[500px]">
-        <Spinner size="lg" />
+        <Spinner size="lg" variant="wave"/>
       </div>
     );
   }

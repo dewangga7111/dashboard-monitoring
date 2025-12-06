@@ -69,3 +69,7 @@ export const form = tv({
 export const inputContainer = tv({
   base: "grid lg:grid-cols-3 gap-4"
 })
+
+export const inputLabel = tv({
+  base: "text-sm text-foreground"
+})

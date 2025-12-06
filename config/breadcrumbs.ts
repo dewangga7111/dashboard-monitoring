@@ -44,10 +44,6 @@ export const breadcrumbsItems = [
     path: "/query",
   },
   {
-    label: "Network",
-    path: "/network",
-  },
-  {
     label: "Master",
     children: [
       {

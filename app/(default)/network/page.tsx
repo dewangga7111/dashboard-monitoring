@@ -1,8 +1,8 @@
 "use client";
 
-import BigNumberMetric from "@/components/charts/big-number-metric";
+import BigNumberMetric from "@/components/charts/viz-stat-chart";
 import { Card, CardBody, Chip, Divider, Progress, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
-import AppLineChart from "@/components/charts/app-line-chart";
+import VizLineChart from "@/components/charts/viz-line-chart";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronUp } from "lucide-react";
 import { useState } from "react";
@@ -10,7 +10,7 @@ import { formatFromMB } from "@/utils/common";
 import AppAutocomplete from "@/components/common/app-autocomplete";
 import AppGaugeChart from "@/components/charts/app-gauge-chart";
 import AppPieChart from "@/components/charts/app-pie-chart";
-import AppBarChart from "@/components/charts/app-bar-chart";
+import AppBarChart from "@/components/charts/viz-bar-chart";
 
 export default function ServerOverviewPage() {
   const [isOpenCpu, setIsOpenCpu] = useState(true);
@@ -75,7 +75,7 @@ export default function ServerOverviewPage() {
           </CardBody>
         </Card>
         <div className="col-span-2">
-          <AppLineChart
+          <VizLineChart
             title="Total Traffic"
             data={gatewayData}
             withArea={true}
@@ -103,7 +103,7 @@ export default function ServerOverviewPage() {
 
         {/* Switch Chart */}
         <div className="col-span-4">
-          <AppLineChart
+          <VizLineChart
             title="Switch"
             data={switchData}
             withArea={true}
@@ -126,7 +126,7 @@ export default function ServerOverviewPage() {
         </div>
 
         <div className="col-span-2">
-          <AppLineChart
+          <VizLineChart
             title="Anomaly Detection"
             data={anomalyDetectionData}
             withArea={true}
@@ -137,7 +137,7 @@ export default function ServerOverviewPage() {
         </div>
 
         <div className="col-span-2">
-          <AppLineChart
+          <VizLineChart
             title="Network Device Latency"
             data={networkLatencyData}
             withArea={true}

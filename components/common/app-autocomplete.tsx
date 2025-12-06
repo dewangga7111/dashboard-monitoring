@@ -20,7 +20,7 @@ export default function AppAutocomplete<T extends Record<string, any>>({
   ...props
 }: AppAutocompleteProps<T>) {
   return (
-    <Autocomplete labelPlacement={labelPlacement} {...props}>
+    <Autocomplete labelPlacement={labelPlacement} {...props} size="sm">
       {items.map((item) => (
         <AutocompleteItem
           key={String(item[itemValue] ?? "")}

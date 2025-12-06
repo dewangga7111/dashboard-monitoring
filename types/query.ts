@@ -1,5 +1,5 @@
 export interface Query {
-  id: number;
+  id: string;
   expression: string;
   legend?: string;
 }

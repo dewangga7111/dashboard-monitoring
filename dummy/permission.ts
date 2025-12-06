@@ -12,7 +12,6 @@ export const permissionList: Permission[] = [
   { function_id: "ROLES_PAGE", read: "Y", create: "Y", update: "Y", delete: "Y" },
   { function_id: "DIVISION_PAGE", read: "Y", create: "Y", update: "Y", delete: "Y" },
   { function_id: "DASHBOARD_PAGE", read: "Y", create: "Y", update: "Y", delete: "Y" },
-  { function_id: "NETWORK_PAGE", read: "Y", create: "Y", update: "Y", delete: "Y" },
   { function_id: "LOGS_PAGE", read: "Y", create: "Y", update: "Y", delete: "Y" },
   { function_id: "QUERY_PAGE", read: "Y", create: "Y", update: "Y", delete: "Y" },
 ]

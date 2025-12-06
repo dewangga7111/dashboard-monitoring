@@ -5,14 +5,14 @@ import { useSelector } from "react-redux";
 import Filter from "@/components/common/filter";
 import { RootState } from "@/redux/store";
 import { FilterField } from "@/types/filter";
-import AppLineChart from "@/components/charts/app-line-chart";
+import VizLineChart from "@/components/charts/viz-line-chart";
 import { Button, Card, CardBody, Listbox, ListboxItem, ScrollShadow } from "@heroui/react";
 import { dummyLogsJson } from "@/dummy/logs";
 import { Copy, EllipsisVertical, RefreshCw } from "lucide-react";
 import moment from "moment";
 import { ManagedPopover } from "@/components/common/managed-popover";
 import AppTextInput from "@/components/common/app-text-input";
-import AppBarChart from "@/components/charts/app-bar-chart";
+import AppBarChart from "@/components/charts/viz-bar-chart";
 
 export default function EditPermissionPage() {
   const router = useRouter();

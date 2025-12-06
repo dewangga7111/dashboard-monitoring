@@ -14,6 +14,7 @@ export default function AppTextInputPassword(props: InputProps) {
     <AppTextInput
       {...props}
       type={isVisible ? "text" : "password"}
+      size="sm"
       endContent={
         <button
           aria-label="toggle password visibility"

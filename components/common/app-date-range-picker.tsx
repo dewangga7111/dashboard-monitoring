@@ -81,6 +81,7 @@ export default function AppDateRangePicker({
             classNames={{
               input: "text-left ml-1",
             }}
+            size="sm"
           />
         </div>
 

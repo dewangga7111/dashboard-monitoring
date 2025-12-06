@@ -30,12 +30,6 @@ export const menus: MenuItem[] = [
     path: "/query",
   },
   {
-    key: constants.menu.MENU_ID_NETWORK,
-    label: "Network",
-    icon: <Network size={18} />,
-    path: "/network",
-  },
-  {
     key: constants.menu.MENU_ID_LOGS,
     label: "Logs",
     icon: <ScrollText size={18} />,

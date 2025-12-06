@@ -21,7 +21,7 @@ type DateRangeValue = {
   end: string | null;
 };
 
-type DateRangeInputProps = {
+type DashboardFilterDateRangeProps = {
   label?: string;
   placeholder?: string;
   value?: DateRangeValue | null;
@@ -29,13 +29,13 @@ type DateRangeInputProps = {
   onChange?: (val: DateRangeValue | null) => void;
 };
 
-export default function DashboardFilter({
+export default function DashboardFilterDateRange({
   label = "Date Range",
   placeholder = "DD-MM-YYYY HH:mm:ss - DD-MM-YYYY HH:mm:ss",
   value,
   className,
   onChange,
-}: DateRangeInputProps) {
+}: DashboardFilterDateRangeProps) {
   const [open, setOpen] = useState(false);
   const [showCustomRange, setShowCustomRange] = useState(false);
   const [selectedRange, setSelectedRange] = useState<DateRangeValue | null>(value || null);
@@ -191,7 +191,7 @@ export default function DashboardFilter({
       : "";
 
   return (
-    <div className={'flex flex-col gap-1 relative ' + className}>
+    <div className={'flex flex-col gap-1 relative w-[340px] ' + className}>
       <Popover
         isOpen={open}
         onOpenChange={(isOpen) => {
@@ -216,6 +216,7 @@ export default function DashboardFilter({
             classNames={{
               input: "text-left ml-1",
             }}
+            size="sm"
           />
         </div>
 
