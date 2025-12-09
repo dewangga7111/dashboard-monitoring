@@ -1,4 +1,4 @@
-import { Alert, Button, Card, CardBody, Drawer, DrawerBody, DrawerContent, DrawerHeader, Spinner, Tooltip } from "@heroui/react";
+import { Alert, Button, Card, CardBody, Drawer, DrawerBody, DrawerContent, DrawerHeader, Spinner, Tab, Tabs, Tooltip } from "@heroui/react";
 import AppTextInput from "@/components/common/app-text-input";
 import AppAutocomplete from "@/components/common/app-autocomplete";
 import VizLineChart from "@/components/charts/viz-line-chart";
@@ -20,6 +20,7 @@ import constants from "@/utils/constants";
 import { clearPrometheus } from "@/redux/slices/prometheus-slice";
 import { v4 as uuidv4 } from "uuid";
 import { VisualizationData } from "@/types/dashboard";
+import VizPieChart from "../charts/viz-pie-chart";
 
 interface AddVisualizationDrawerProps {
   isOpen: boolean;
@@ -28,10 +29,11 @@ interface AddVisualizationDrawerProps {
 }
 
 const visualizationTypes = [
-  { value: "line", label: "Line Chart" },
-  { value: "area", label: "Area Chart" },
-  { value: "bar", label: "Bar Chart" },
+  { value: "line", label: "Line" },
+  { value: "area", label: "Area" },
+  { value: "bar", label: "Bar" },
   { value: "stat", label: "Stat/Number" },
+  { value: "pie", label: "Pie" },
 ];
 
 const start = moment().subtract(1, "hour").toISOString();
@@ -48,7 +50,7 @@ export default function AddVisualizationDrawer({
 
   const [queries, setQueries] = useState<Query[]>([{ id: uuidv4(), expression: "", legend: "" }]);
   const [name, setName] = useState("");
-  const [type, setType] = useState<"line" | "area" | "bar" | "stat">("line");
+  const [type, setType] = useState<"line" | "area" | "bar" | "stat" | "pie">("line");
   const [description, setDescription] = useState("");
 
   const clearState = () => {
@@ -96,7 +98,7 @@ export default function AddVisualizationDrawer({
 
   const handleClose = () => {
     const hasChanges = name.trim() || description.trim() || queries.some(q => q.expression.trim());
-    
+
     if (hasChanges) {
       confirm({
         message: constants.confirmation.CLOSE_DRAWER,
@@ -199,6 +201,12 @@ export default function AddVisualizationDrawer({
             <VizStatChart {...chartProps} />
           </div>
         );
+      case "pie":
+        return (
+          <div className="h-[300px]">
+            <VizPieChart {...chartProps} />
+          </div>
+        );
       default:
         return null;
     }
@@ -270,7 +278,7 @@ export default function AddVisualizationDrawer({
                         <Info className="absolute top-3 left-3" size={18} />
                       </Tooltip>
                     )}
-                    
+
                     {/* Title */}
                     <div className="font-semibold text-center mb-5">
                       {name || "Untitled Visualization"}
@@ -297,6 +305,32 @@ export default function AddVisualizationDrawer({
               </div>
 
               {/* Query Forms */}
+              {/* <Tabs
+                aria-label="Options"
+                color="primary"
+                variant="solid"
+                classNames={{
+                  tabContent: "text-content1-foreground",
+                  tab: "data-[selected=true]:bg-primary data-[selected=true]:text-white"
+                }}
+              >
+                <Tab
+                  key="query"
+                  title={
+                    <div className="flex items-center space-x-2">
+                      <span>Query</span>
+                    </div>
+                  }
+                />
+                <Tab
+                  key="settings"
+                  title={
+                    <div className="flex items-center space-x-2">
+                      <span>Settings</span>
+                    </div>
+                  }
+                />
+              </Tabs> */}
               <div>
                 <span className={inputLabel()}>Queries</span>
                 <div className="mt-2">
@@ -340,14 +374,16 @@ export default function AddVisualizationDrawer({
               </div>
 
               {/* Add Query Button */}
-              <Button
-                color="primary"
-                className="w-full"
-                startContent={<Plus size={20} />}
-                onPress={handleAddQuery}
-              >
-                Add Query
-              </Button>
+              <div className="h-[100%]">
+                <Button
+                  color="primary"
+                  className="w-full"
+                  startContent={<Plus size={20} />}
+                  onPress={handleAddQuery}
+                >
+                  Add Query
+                </Button>
+              </div>
             </DrawerBody>
           </>
         )}

@@ -11,7 +11,7 @@ export type Dashboard = {
 export type VisualizationData = {
   id: string;
   name: string;
-  type: "line" | "area" | "bar" | "stat";
+  type: "line" | "area" | "bar" | "stat" | "pie";
   description: string;
   queries: Query[];
   x: number;

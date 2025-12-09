@@ -7,6 +7,7 @@ import VizLineChart from "@/components/charts/viz-line-chart";
 import VizAreaChart from "@/components/charts/viz-area-chart";
 import VizBarChart from "@/components/charts/viz-bar-chart";
 import VizStatChart from "@/components/charts/viz-stat-chart";
+import VizPieChart from "@/components/charts/viz-pie-chart";
 
 interface VisualizationCardProps {
   visualization: VisualizationData;
@@ -72,6 +73,15 @@ export default function VisualizationCard({
       case "stat":
         return (
           <VizStatChart
+            data={mergedData}
+            chartSeries={chartSeries}
+            loading={visualization.loading}
+          />
+        );
+
+      case "pie":
+        return (
+          <VizPieChart
             data={mergedData}
             chartSeries={chartSeries}
             loading={visualization.loading}
@@ -145,7 +155,7 @@ export default function VisualizationCard({
         )}
 
         {/* Chart content */}
-        <div className="flex-1 px-4 pb-4 min-h-[200px]">
+        <div className="flex-1 px-4 pb-4">
           {renderChart()}
         </div>
       </CardBody>

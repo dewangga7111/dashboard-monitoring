@@ -59,22 +59,6 @@ export default function AppGaugeChart({
           </Pie>
         </PieChart>
       </ResponsiveContainer>
-
-      {/* Center text */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ top: '35%' }}>
-        <div className="text-5xl font-bold" style={{ color: color }}>
-          {value}
-        </div>
-        <div className="text-base text-gray-400 mt-2">
-          {unit}
-        </div>
-      </div>
-
-      {/* Min and Max labels */}
-      <div className="absolute inset-0 flex items-center justify-between pointer-events-none text-sm text-gray-400" style={{ top: '75%', left: '15%', right: '15%' }}>
-        <span>0</span>
-        <span>{max}</span>
-      </div>
     </div>
   );
 

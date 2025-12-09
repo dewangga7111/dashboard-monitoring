@@ -1,6 +1,7 @@
 "use client";
 
 import { Spinner } from "@heroui/react";
+import { useEffect, useRef, useState } from "react";
 
 interface VizStatChartProps {
   data: any[];
@@ -9,6 +10,53 @@ interface VizStatChartProps {
 }
 
 export default function VizStatChart({ data, chartSeries, loading = false }: VizStatChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [fontSize, setFontSize] = useState(48);
+
+  // Calculate dynamic font size based on container dimensions
+  useEffect(() => {
+    const calculateFontSize = () => {
+      if (!containerRef.current) return;
+
+      const container = containerRef.current;
+      const width = container.offsetWidth;
+      const height = container.offsetHeight;
+      
+      // Calculate font size based on container size
+      // Using smaller dimension to ensure it fits
+      const minDimension = Math.min(width, height);
+      const numStats = latestValues.length;
+      
+      // Base calculation: larger containers = larger font, more stats = smaller font
+      let calculatedSize;
+      
+      if (numStats === 1) {
+        // Single stat gets the largest size
+        calculatedSize = Math.min(minDimension * 0.25, 120);
+      } else if (numStats <= 4) {
+        // 2-4 stats get medium size
+        calculatedSize = Math.min(minDimension * 0.15, 80);
+      } else {
+        // 5+ stats get smaller size
+        calculatedSize = Math.min(minDimension * 0.1, 60);
+      }
+      
+      setFontSize(Math.max(calculatedSize, 24)); // Minimum 24px
+    };
+
+    calculateFontSize();
+
+    // Recalculate on resize
+    const resizeObserver = new ResizeObserver(calculateFontSize);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [chartSeries.length, data.length]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -34,35 +82,54 @@ export default function VizStatChart({ data, chartSeries, loading = false }: Viz
     };
   });
 
-  // Determine grid columns based on number of stats
-  const gridCols = latestValues.length === 1
-    ? "grid-cols-1"
-    : latestValues.length === 2
-      ? "grid-cols-2"
-      : latestValues.length === 3
-        ? "grid-cols-3"
-        : "grid-cols-2";
+  // Determine grid layout based on number of stats
+  const getGridClass = (count: number) => {
+    if (count === 1) return "grid-cols-1";
+    if (count === 2) return "grid-cols-2";
+    if (count === 3) return "grid-cols-3";
+    if (count === 4) return "grid-cols-2";
+    if (count <= 6) return "grid-cols-3";
+    return "grid-cols-4";
+  };
+
+  const gridClass = getGridClass(latestValues.length);
+  
+  // Calculate label font size (proportional to value font size)
+  const labelFontSize = Math.max(fontSize * 0.25, 10);
 
   return (
-    <div className={`grid ${gridCols} gap-4 p-4 h-full`}>
-      {latestValues.map((stat, i) => (
-        <div
-          key={i}
-          className="flex flex-col items-center justify-center p-4 bg-default-100 rounded-lg"
-        >
-          <div className="text-xs text-default-500 mb-2 text-center line-clamp-2">
-            {stat.name}
-          </div>
+    <div ref={containerRef} className={`grid ${gridClass} gap-4 h-full w-full p-4`}>
+      {latestValues.map((stat, i) => {
+        const color = `hsl(${(i * 137) % 360}, 70%, 50%)`;
+        
+        return (
           <div
-            className="text-3xl font-bold"
-            style={{ color: `hsl(${(i * 137) % 360}, 70%, 50%)` }}
+            key={i}
+            className="flex flex-col items-center justify-center h-full"
           >
-            {typeof stat.value === "number"
-              ? stat.value.toFixed(2)
-              : stat.value}
+            {/* Value */}
+            <div
+              className="font-bold leading-none"
+              style={{ 
+                fontSize: `${fontSize}px`,
+                color: color
+              }}
+            >
+              {typeof stat.value === "number"
+                ? stat.value.toFixed(2)
+                : stat.value}
+            </div>
+            
+            {/* Label */}
+            <div 
+              className="text-default-500 mb-2 text-center line-clamp-2 px-2"
+              style={{ fontSize: `${labelFontSize}px` }}
+            >
+              {stat.name}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
