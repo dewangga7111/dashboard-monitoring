@@ -21,6 +21,7 @@ import { clearPrometheus } from "@/redux/slices/prometheus-slice";
 import { v4 as uuidv4 } from "uuid";
 import { VisualizationData } from "@/types/dashboard";
 import VizPieChart from "../charts/viz-pie-chart";
+import VizGaugeChart from "../charts/viz-gauge-chart";
 
 interface AddVisualizationDrawerProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ const visualizationTypes = [
   { value: "bar", label: "Bar" },
   { value: "stat", label: "Stat/Number" },
   { value: "pie", label: "Pie" },
+  { value: "gauge", label: "Gauge" },
 ];
 
 const start = moment().subtract(1, "hour").toISOString();
@@ -50,7 +52,7 @@ export default function AddVisualizationDrawer({
 
   const [queries, setQueries] = useState<Query[]>([{ id: uuidv4(), expression: "", legend: "" }]);
   const [name, setName] = useState("");
-  const [type, setType] = useState<"line" | "area" | "bar" | "stat" | "pie">("line");
+  const [type, setType] = useState<"line" | "area" | "bar" | "stat" | "pie" | "gauge">("line");
   const [description, setDescription] = useState("");
 
   const clearState = () => {
@@ -193,6 +195,12 @@ export default function AddVisualizationDrawer({
         return (
           <div className="h-[300px]">
             <VizBarChart {...chartProps} />
+          </div>
+        );
+      case "gauge":
+        return (
+          <div className="h-[300px]">
+            <VizGaugeChart {...chartProps} />
           </div>
         );
       case "stat":
