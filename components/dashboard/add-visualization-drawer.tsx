@@ -1,4 +1,4 @@
-import { Alert, Button, Card, CardBody, Drawer, DrawerBody, DrawerContent, DrawerHeader, Spinner, Tab, Tabs, Tooltip } from "@heroui/react";
+import { Alert, Button, Card, CardBody, Divider, Drawer, DrawerBody, DrawerContent, DrawerHeader, Slider, Spinner, Switch, Tab, Tabs, Tooltip } from "@heroui/react";
 import AppTextInput from "@/components/common/app-text-input";
 import AppAutocomplete from "@/components/common/app-autocomplete";
 import VizLineChart from "@/components/charts/viz-line-chart";
@@ -54,6 +54,7 @@ export default function AddVisualizationDrawer({
   const [name, setName] = useState("");
   const [type, setType] = useState<"line" | "area" | "bar" | "stat" | "pie" | "gauge">("line");
   const [description, setDescription] = useState("");
+  const [activeTab, setActiveTab] = useState<"query" | "settings">("query");
 
   const clearState = () => {
     setQueries([{ id: uuidv4(), expression: "", legend: "" }]);
@@ -222,6 +223,7 @@ export default function AddVisualizationDrawer({
 
   return (
     <Drawer
+      key={`drawer-${isOpen}`}
       isDismissable={false}
       isKeyboardDismissDisabled={true}
       isOpen={isOpen}
@@ -313,14 +315,15 @@ export default function AddVisualizationDrawer({
               </div>
 
               {/* Query Forms */}
-              {/* <Tabs
+              <Tabs
                 aria-label="Options"
                 color="primary"
-                variant="solid"
-                classNames={{
-                  tabContent: "text-content1-foreground",
-                  tab: "data-[selected=true]:bg-primary data-[selected=true]:text-white"
+                variant="underlined"
+                selectedKey={activeTab}
+                onSelectionChange={(key: React.Key) => {
+                  setActiveTab(key as "query" | "settings");
                 }}
+                disableAnimation
               >
                 <Tab
                   key="query"
@@ -338,60 +341,144 @@ export default function AddVisualizationDrawer({
                     </div>
                   }
                 />
-              </Tabs> */}
-              <div>
-                <span className={inputLabel()}>Queries</span>
-                <div className="mt-2">
-                  <AnimatePresence mode="popLayout">
-                    {queries.map((query, index) => (
-                      <motion.div
-                        key={query.id}
-                        initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-                        animate={{ opacity: 1, height: "auto", marginBottom: 16 }}
-                        exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="relative">
-                          <QueryForm
-                            key={`query-form-${query.id}`}
-                            index={index + 1}
-                            valueExpression={query.expression}
-                            onChangeExpression={(expression: string) => handleExpressionChange(query.id, expression)}
-                            valueLegend={query.legend}
-                            onChangeLegend={(legend: string) => handleLegendChange(query.id, legend)}
-                            onSearch={() => executeQuery()}
-                          />
-                          {queries.length > 1 && (
-                            <Button
-                              isIconOnly
-                              size="sm"
-                              color="danger"
-                              variant="flat"
-                              className="absolute top-2 right-2 z-10"
-                              onPress={() => handleRemoveQuery(query.id)}
-                              aria-label="Remove query"
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          )}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              </div>
+              </Tabs>
+              {activeTab == 'query' &&
+                <>
+                  <div>
+                    <span className={inputLabel()}>Queries</span>
+                    <div className="mt-2">
+                      <AnimatePresence mode="popLayout">
+                        {queries.map((query, index) => (
+                          <motion.div
+                            key={query.id}
+                            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                            animate={{ opacity: 1, height: "auto", marginBottom: 16 }}
+                            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <div className="relative">
+                              <QueryForm
+                                key={`query-form-${query.id}`}
+                                index={index + 1}
+                                valueExpression={query.expression}
+                                onChangeExpression={(expression: string) => handleExpressionChange(query.id, expression)}
+                                valueLegend={query.legend}
+                                onChangeLegend={(legend: string) => handleLegendChange(query.id, legend)}
+                                onSearch={() => executeQuery()}
+                              />
+                              {queries.length > 1 && (
+                                <Button
+                                  isIconOnly
+                                  size="sm"
+                                  color="danger"
+                                  variant="flat"
+                                  className="absolute top-2 right-2 z-10"
+                                  onPress={() => handleRemoveQuery(query.id)}
+                                  aria-label="Remove query"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              )}
+                            </div>
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </div>
 
-              {/* Add Query Button */}
-              <div className="h-[100%]">
-                <Button
-                  color="primary"
-                  className="w-full"
-                  startContent={<Plus size={20} />}
-                  onPress={handleAddQuery}
-                >
-                  Add Query
-                </Button>
-              </div>
+                  {/* Add Query Button */}
+                  <div className="h-[100%]">
+                    <Button
+                      color="primary"
+                      className="w-full"
+                      startContent={<Plus size={20} />}
+                      onPress={handleAddQuery}
+                    >
+                      Add Query
+                    </Button>
+                  </div>
+                </>
+              }
+              {activeTab == 'settings' &&
+                <div className="flex gap-6">
+                  <div className="flex-1 flex flex-col gap-4">
+                    <div>
+                      <div className="text-sm text-default-500 font-bold">Legend</div>
+                      <Divider className="w-full my-2" />
+                      <div className="flex flex-col gap-5">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Show</span>
+                          <Switch defaultSelected size="sm" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-sm text-default-500 font-bold">Visual</div>
+                      <Divider className="w-full my-2" />
+                      <div className="flex flex-col gap-5">
+                        <Slider
+                          className="max-w-md"
+                          color="primary"
+                          defaultValue={0.2}
+                          maxValue={1}
+                          minValue={0}
+                          showSteps={true}
+                          size="md"
+                          step={0.1}
+                          label="Line Width"
+                        />
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Vertical Line</span>
+                          <Switch defaultSelected size="sm" />
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Connect Null</span>
+                          <Switch defaultSelected size="sm" />
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div className="flex-1 w-64 flex flex-col gap-4">
+                    <div>
+                      <div className="text-sm text-default-500 font-bold">Y Axis</div>
+                      <Divider className="w-full my-2" />
+                      <div className="flex flex-col gap-5">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Show</span>
+                          <Switch defaultSelected size="sm" />
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Short Values</span>
+                          <Switch defaultSelected size="sm" />
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Label</span>
+                          <AppTextInput className="w-40" placeholder="Enter label" />
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Max</span>
+                          <AppTextInput className="w-40" type="number" placeholder="Enter max value" />
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Min</span>
+                          <AppTextInput className="w-40" type="number" placeholder="Enter min value" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex-1 w-64 flex flex-col gap-4">
+                    <div>
+                      <div className="text-sm text-default-500 font-bold">Reset Settings</div>
+                      <Divider className="w-full my-2" />
+                      <div className="flex flex-col gap-5">
+                        <Button size="sm" variant="bordered">Reset to default</Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
             </DrawerBody>
           </>
         )}
