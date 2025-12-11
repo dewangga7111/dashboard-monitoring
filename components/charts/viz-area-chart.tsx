@@ -4,16 +4,22 @@ import { Spinner } from "@heroui/react";
 import { useTheme } from "next-themes";
 import { ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { useId } from "react";
+import { AreaChartSettings } from "@/types/dashboard";
+import { getDefaultChartSettings } from "@/utils/chart-defaults";
 
 interface VizAreaChartProps {
   data: any[];
   chartSeries: { name: string }[];
   loading?: boolean;
+  settings?: AreaChartSettings;
 }
 
-export default function VizAreaChart({ data, chartSeries, loading = false }: VizAreaChartProps) {
+export default function VizAreaChart({ data, chartSeries, loading = false, settings }: VizAreaChartProps) {
   const { theme } = useTheme();
   const uniqueId = useId();
+
+  // Get settings with fallback to defaults
+  const chartSettings = settings || (getDefaultChartSettings("area") as AreaChartSettings);
 
   if (loading) {
     return (
@@ -48,27 +54,44 @@ export default function VizAreaChart({ data, chartSeries, loading = false }: Viz
                 x2="0"
                 y2="1"
               >
-                <stop offset="5%" stopColor={color} stopOpacity={0.8} />
+                <stop offset="5%" stopColor={color} stopOpacity={chartSettings.visual.gradientOpacity} />
                 <stop offset="95%" stopColor={color} stopOpacity={0.1} />
               </linearGradient>
             );
           })}
         </defs>
 
-        <XAxis
-          dataKey="time"
+        {chartSettings.xAxis.show && (
+          <XAxis
+            dataKey="time"
+            stroke="#6b7280"
+            tick={{ fill: "#9ca3af", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+          />
+        )}
+        {chartSettings.yAxis.show && (
+          <YAxis
+            stroke="#6b7280"
+            tick={{ fill: "#9ca3af", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            label={chartSettings.yAxis.label ? {
+              value: chartSettings.yAxis.label,
+              angle: -90,
+              position: 'insideLeft'
+            } : undefined}
+            domain={[
+              chartSettings.yAxis.min ?? 'auto',
+              chartSettings.yAxis.max ?? 'auto'
+            ]}
+          />
+        )}
+        <CartesianGrid
+          strokeDasharray="0"
           stroke="#6b7280"
-          tick={{ fill: "#9ca3af", fontSize: 12 }}
-          tickLine={false}
-          axisLine={false}
+          vertical={chartSettings.grid.showVertical}
         />
-        <YAxis
-          stroke="#6b7280"
-          tick={{ fill: "#9ca3af", fontSize: 12 }}
-          tickLine={false}
-          axisLine={false}
-        />
-        <CartesianGrid strokeDasharray="0" stroke="#6b7280" vertical={false} />
 
         <Tooltip
           contentStyle={{
@@ -87,27 +110,30 @@ export default function VizAreaChart({ data, chartSeries, loading = false }: Viz
           }
         />
 
-        <Legend
-          wrapperStyle={{
-            paddingTop: "20px",
-            fontSize: "11px",
-            maxHeight: `${maxLegendHeight}px`,
-            overflowY: "auto",
-            overflowX: "hidden"
-          }}
-          iconType="line"
-          iconSize={12}
-          align="left"
-        />
+        {chartSettings.legend.show && (
+          <Legend
+            wrapperStyle={{
+              paddingTop: "20px",
+              fontSize: "11px",
+              maxHeight: `${maxLegendHeight}px`,
+              overflowY: "auto",
+              overflowX: "hidden"
+            }}
+            iconType="line"
+            iconSize={12}
+            align="left"
+          />
+        )}
 
         {chartSeries.map((series, i) => (
           <Area
             key={series.name}
-            type="monotone"
+            type={chartSettings.visual.lineType}
             dataKey={series.name}
             stroke={`hsl(${(i * 137) % 360}, 70%, 50%)`}
-            strokeWidth={2}
+            strokeWidth={chartSettings.visual.strokeWidth}
             fill={`url(#gradient-${uniqueId}-${i})`}
+            connectNulls={chartSettings.visual.connectNulls}
             isAnimationActive={false}
           />
         ))}

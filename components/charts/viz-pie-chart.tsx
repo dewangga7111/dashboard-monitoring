@@ -3,15 +3,21 @@
 import { Spinner } from "@heroui/react";
 import { useTheme } from "next-themes";
 import { ResponsiveContainer, PieChart, Pie, Tooltip, Cell, Legend } from "recharts";
+import { PieChartSettings } from "@/types/dashboard";
+import { getDefaultChartSettings } from "@/utils/chart-defaults";
 
 interface VizPieChartProps {
   data: any[];
   chartSeries: { name: string }[];
   loading?: boolean;
+  settings?: PieChartSettings;
 }
 
-export default function VizPieChart({ data, chartSeries, loading = false }: VizPieChartProps) {
+export default function VizPieChart({ data, chartSeries, loading = false, settings }: VizPieChartProps) {
   const { theme } = useTheme();
+
+  // Get settings with fallback to defaults
+  const chartSettings = settings || (getDefaultChartSettings("pie") as PieChartSettings);
 
   if (loading) {
     return (
@@ -31,14 +37,27 @@ export default function VizPieChart({ data, chartSeries, loading = false }: VizP
 
   const latestValues = chartSeries.map((series, i) => {
     const lastDataPoint = data[data.length - 1];
+    const value = lastDataPoint?.[series.name] ?? 0;
     return {
       name: series.name,
-      value: lastDataPoint?.[series.name] ?? 0,
+      value: value,
+      percent: 0, // Will be calculated by recharts
     };
   });
-  
-  const renderLabel = (data: any) => {
-    return `${data.value}`;
+
+  const renderLabel = (entry: any) => {
+    if (!chartSettings.visual.showLabels) return null;
+
+    switch (chartSettings.visual.labelType) {
+      case "value":
+        return `${entry.value}`;
+      case "percentage":
+        return `${entry.percent}%`;
+      case "name":
+        return entry.name;
+      default:
+        return `${entry.value}`;
+    }
   };
 
   const maxLegendHeight = 150;
@@ -66,10 +85,12 @@ export default function VizPieChart({ data, chartSeries, loading = false }: VizP
           nameKey="name"
           cx="50%"
           cy="50%"
-          outerRadius="80%"
+          outerRadius={chartSettings.visual.outerRadius}
+          innerRadius={chartSettings.visual.innerRadius}
           fill="#8884d8"
           isAnimationActive={false}
-          label={renderLabel}
+          label={chartSettings.visual.showLabels ? renderLabel : false}
+          labelLine={chartSettings.visual.showLabels}
         >
           {latestValues.map((entry, index) => (
             <Cell
@@ -79,18 +100,20 @@ export default function VizPieChart({ data, chartSeries, loading = false }: VizP
           ))}
         </Pie>
 
-        <Legend
-          wrapperStyle={{
-            paddingTop: "20px",
-            fontSize: "11px",
-            maxHeight: `${maxLegendHeight}px`,
-            overflowY: "auto",
-            overflowX: "hidden"
-          }}
-          iconType="rect"
-          iconSize={12}
-          align="left"
-        />
+        {chartSettings.legend.show && (
+          <Legend
+            wrapperStyle={{
+              paddingTop: "20px",
+              fontSize: "11px",
+              maxHeight: `${maxLegendHeight}px`,
+              overflowY: "auto",
+              overflowX: "hidden"
+            }}
+            iconType="rect"
+            iconSize={12}
+            align="left"
+          />
+        )}
       </PieChart>
     </ResponsiveContainer>
   );

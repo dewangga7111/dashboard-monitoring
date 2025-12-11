@@ -2,7 +2,7 @@
 
 import { Card, CardBody, Alert, Spinner, Tooltip, Button } from "@heroui/react";
 import { Info, Trash2, GripVertical } from "lucide-react";
-import { VisualizationData } from "@/types/dashboard";
+import { VisualizationData, LineChartSettings, AreaChartSettings, BarChartSettings, StatChartSettings, PieChartSettings, GaugeChartSettings } from "@/types/dashboard";
 import VizLineChart from "@/components/charts/viz-line-chart";
 import VizAreaChart from "@/components/charts/viz-area-chart";
 import VizBarChart from "@/components/charts/viz-bar-chart";
@@ -50,6 +50,7 @@ export default function VisualizationCard({
             data={mergedData}
             chartSeries={chartSeries}
             loading={visualization.loading}
+            settings={visualization.settings as LineChartSettings}
           />
         );
 
@@ -59,6 +60,7 @@ export default function VisualizationCard({
             data={mergedData}
             chartSeries={chartSeries}
             loading={visualization.loading}
+            settings={visualization.settings as AreaChartSettings}
           />
         );
 
@@ -68,6 +70,7 @@ export default function VisualizationCard({
             data={mergedData}
             chartSeries={chartSeries}
             loading={visualization.loading}
+            settings={visualization.settings as BarChartSettings}
           />
         );
 
@@ -77,6 +80,7 @@ export default function VisualizationCard({
             data={mergedData}
             chartSeries={chartSeries}
             loading={visualization.loading}
+            settings={visualization.settings as StatChartSettings}
           />
         );
 
@@ -86,6 +90,7 @@ export default function VisualizationCard({
             data={mergedData}
             chartSeries={chartSeries}
             loading={visualization.loading}
+            settings={visualization.settings as PieChartSettings}
           />
         );
 
@@ -95,6 +100,7 @@ export default function VisualizationCard({
             data={mergedData}
             chartSeries={chartSeries}
             loading={visualization.loading}
+            settings={visualization.settings as GaugeChartSettings}
           />
         );
 

@@ -3,15 +3,21 @@
 import { Spinner } from "@heroui/react";
 import { useTheme } from "next-themes";
 import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { LineChartSettings } from "@/types/dashboard";
+import { getDefaultChartSettings } from "@/utils/chart-defaults";
 
 interface VizLineChartProps {
   data: any[];
   chartSeries: { name: string }[];
   loading?: boolean;
+  settings?: LineChartSettings;
 }
 
-export default function VizLineChart({ data, chartSeries, loading = false }: VizLineChartProps) {
+export default function VizLineChart({ data, chartSeries, loading = false, settings }: VizLineChartProps) {
   const { theme } = useTheme();
+
+  // Get settings with fallback to defaults
+  const chartSettings = settings || (getDefaultChartSettings("line") as LineChartSettings);
 
   if (loading) {
     return (
@@ -34,20 +40,37 @@ export default function VizLineChart({ data, chartSeries, loading = false }: Viz
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={data}>
-        <XAxis
-          dataKey="time"
+        {chartSettings.xAxis.show && (
+          <XAxis
+            dataKey="time"
+            stroke="#6b7280"
+            tick={{ fill: "#9ca3af", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+          />
+        )}
+        {chartSettings.yAxis.show && (
+          <YAxis
+            stroke="#6b7280"
+            tick={{ fill: "#9ca3af", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            label={chartSettings.yAxis.label ? {
+              value: chartSettings.yAxis.label,
+              angle: -90,
+              position: 'insideLeft'
+            } : undefined}
+            domain={[
+              chartSettings.yAxis.min ?? 'auto',
+              chartSettings.yAxis.max ?? 'auto'
+            ]}
+          />
+        )}
+        <CartesianGrid
+          strokeDasharray="0"
           stroke="#6b7280"
-          tick={{ fill: "#9ca3af", fontSize: 12 }}
-          tickLine={false}
-          axisLine={false}
+          vertical={chartSettings.grid.showVertical}
         />
-        <YAxis
-          stroke="#6b7280"
-          tick={{ fill: "#9ca3af", fontSize: 12 }}
-          tickLine={false}
-          axisLine={false}
-        />
-        <CartesianGrid strokeDasharray="0" stroke="#6b7280" vertical={false} />
 
         <Tooltip
           contentStyle={{
@@ -66,27 +89,30 @@ export default function VizLineChart({ data, chartSeries, loading = false }: Viz
           }
         />
 
-        <Legend
-          wrapperStyle={{
-            paddingTop: "20px",
-            fontSize: "11px",
-            maxHeight: `${maxLegendHeight}px`,
-            overflowY: "auto",
-            overflowX: "hidden"
-          }}
-          iconType="line"
-          iconSize={12}
-          align="left"
-        />
+        {chartSettings.legend.show && (
+          <Legend
+            wrapperStyle={{
+              paddingTop: "20px",
+              fontSize: "11px",
+              maxHeight: `${maxLegendHeight}px`,
+              overflowY: "auto",
+              overflowX: "hidden"
+            }}
+            iconType="line"
+            iconSize={12}
+            align="left"
+          />
+        )}
 
         {chartSeries.map((series, i) => (
           <Line
             key={series.name}
-            type="monotone"
+            type={chartSettings.visual.lineType}
             dataKey={series.name}
-            dot={false}
+            dot={chartSettings.visual.showDots}
             stroke={`hsl(${(i * 137) % 360}, 70%, 50%)`}
-            strokeWidth={2}
+            strokeWidth={chartSettings.visual.strokeWidth}
+            connectNulls={chartSettings.visual.connectNulls}
             activeDot={{
               r: 4,
               fill: `hsl(${(i * 137) % 360}, 70%, 50%)`

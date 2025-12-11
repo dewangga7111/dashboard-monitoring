@@ -19,9 +19,16 @@ import { useConfirmation } from "@/context/confirmation-context";
 import constants from "@/utils/constants";
 import { clearPrometheus } from "@/redux/slices/prometheus-slice";
 import { v4 as uuidv4 } from "uuid";
-import { VisualizationData } from "@/types/dashboard";
+import { VisualizationData, ChartSettings, LineChartSettings, AreaChartSettings, BarChartSettings, StatChartSettings, PieChartSettings, GaugeChartSettings } from "@/types/dashboard";
 import VizPieChart from "../charts/viz-pie-chart";
 import VizGaugeChart from "../charts/viz-gauge-chart";
+import { getDefaultChartSettings } from "@/utils/chart-defaults";
+import LineChartSettingsPanel from "./settings/line-chart-settings";
+import AreaChartSettingsPanel from "./settings/area-chart-settings";
+import BarChartSettingsPanel from "./settings/bar-chart-settings";
+import StatChartSettingsPanel from "./settings/stat-chart-settings";
+import PieChartSettingsPanel from "./settings/pie-chart-settings";
+import GaugeChartSettingsPanel from "./settings/gauge-chart-settings";
 
 interface AddVisualizationDrawerProps {
   isOpen: boolean;
@@ -55,14 +62,22 @@ export default function AddVisualizationDrawer({
   const [type, setType] = useState<"line" | "area" | "bar" | "stat" | "pie" | "gauge">("line");
   const [description, setDescription] = useState("");
   const [activeTab, setActiveTab] = useState<"query" | "settings">("query");
+  const [settings, setSettings] = useState<ChartSettings>(getDefaultChartSettings("line"));
 
   const clearState = () => {
     setQueries([{ id: uuidv4(), expression: "", legend: "" }]);
     setName("");
     setType("line");
     setDescription("");
+    setSettings(getDefaultChartSettings("line"));
+    setActiveTab("query");
     dispatch(clearPrometheus());
   };
+
+  // Initialize settings when chart type changes
+  useEffect(() => {
+    setSettings(getDefaultChartSettings(type));
+  }, [type]);
 
   useEffect(() => {
     return () => {
@@ -89,6 +104,7 @@ export default function AddVisualizationDrawer({
       type: type,
       description: description,
       queries: queries.filter(q => q.expression.trim()), // Only include non-empty queries
+      settings: settings, // Include settings
       x: 0,
       y: 0,
       width: 6,
@@ -173,47 +189,50 @@ export default function AddVisualizationDrawer({
     }
 
     // Render chart based on selected type
-    const chartProps = {
+    // Make sure settings type matches chart type
+    const chartSettings = settings?.type === type ? settings : getDefaultChartSettings(type);
+
+    const baseProps = {
       data: store.mergedData,
       chartSeries: store.chartSeries,
-      loading: store.loading
+      loading: store.loading,
     };
 
     switch (type) {
       case "line":
         return (
           <div className="h-[300px]">
-            <VizLineChart {...chartProps} />
+            <VizLineChart {...baseProps} settings={chartSettings as LineChartSettings} />
           </div>
         );
       case "area":
         return (
           <div className="h-[300px]">
-            <VizAreaChart {...chartProps} />
+            <VizAreaChart {...baseProps} settings={chartSettings as AreaChartSettings} />
           </div>
         );
       case "bar":
         return (
           <div className="h-[300px]">
-            <VizBarChart {...chartProps} />
+            <VizBarChart {...baseProps} settings={chartSettings as BarChartSettings} />
           </div>
         );
       case "gauge":
         return (
           <div className="h-[300px]">
-            <VizGaugeChart {...chartProps} />
+            <VizGaugeChart {...baseProps} settings={chartSettings as GaugeChartSettings} />
           </div>
         );
       case "stat":
         return (
           <div className="h-[300px]">
-            <VizStatChart {...chartProps} />
+            <VizStatChart {...baseProps} settings={chartSettings as StatChartSettings} />
           </div>
         );
       case "pie":
         return (
           <div className="h-[300px]">
-            <VizPieChart {...chartProps} />
+            <VizPieChart {...baseProps} settings={chartSettings as PieChartSettings} />
           </div>
         );
       default:
@@ -399,86 +418,65 @@ export default function AddVisualizationDrawer({
                   </div>
                 </>
               }
-              {activeTab == 'settings' &&
+              {activeTab == 'settings' && settings && (
                 <div className="flex gap-6">
-                  <div className="flex-1 flex flex-col gap-4">
-                    <div>
-                      <div className="text-sm text-default-500 font-bold">Legend</div>
-                      <Divider className="w-full my-2" />
-                      <div className="flex flex-col gap-5">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Show</span>
-                          <Switch defaultSelected size="sm" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="text-sm text-default-500 font-bold">Visual</div>
-                      <Divider className="w-full my-2" />
-                      <div className="flex flex-col gap-5">
-                        <Slider
-                          className="max-w-md"
-                          color="primary"
-                          defaultValue={0.2}
-                          maxValue={1}
-                          minValue={0}
-                          showSteps={true}
-                          size="md"
-                          step={0.1}
-                          label="Line Width"
-                        />
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Vertical Line</span>
-                          <Switch defaultSelected size="sm" />
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Connect Null</span>
-                          <Switch defaultSelected size="sm" />
-                        </div>
-                      </div>
-                    </div>
-
+                  <div className="flex-1">
+                    {type === "line" && settings.type === "line" && (
+                      <LineChartSettingsPanel
+                        settings={settings as LineChartSettings}
+                        onChange={setSettings}
+                      />
+                    )}
+                    {type === "area" && settings.type === "area" && (
+                      <AreaChartSettingsPanel
+                        settings={settings as AreaChartSettings}
+                        onChange={setSettings}
+                      />
+                    )}
+                    {type === "bar" && settings.type === "bar" && (
+                      <BarChartSettingsPanel
+                        settings={settings as BarChartSettings}
+                        onChange={setSettings}
+                      />
+                    )}
+                    {type === "stat" && settings.type === "stat" && (
+                      <StatChartSettingsPanel
+                        settings={settings as StatChartSettings}
+                        onChange={setSettings}
+                      />
+                    )}
+                    {type === "pie" && settings.type === "pie" && (
+                      <PieChartSettingsPanel
+                        settings={settings as PieChartSettings}
+                        onChange={setSettings}
+                      />
+                    )}
+                    {type === "gauge" && settings.type === "gauge" && (
+                      <GaugeChartSettingsPanel
+                        settings={settings as GaugeChartSettings}
+                        onChange={setSettings}
+                      />
+                    )}
                   </div>
-                  <div className="flex-1 w-64 flex flex-col gap-4">
-                    <div>
-                      <div className="text-sm text-default-500 font-bold">Y Axis</div>
-                      <Divider className="w-full my-2" />
-                      <div className="flex flex-col gap-5">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Show</span>
-                          <Switch defaultSelected size="sm" />
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Short Values</span>
-                          <Switch defaultSelected size="sm" />
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Label</span>
-                          <AppTextInput className="w-40" placeholder="Enter label" />
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Max</span>
-                          <AppTextInput className="w-40" type="number" placeholder="Enter max value" />
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Min</span>
-                          <AppTextInput className="w-40" type="number" placeholder="Enter min value" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex-1 w-64 flex flex-col gap-4">
+
+                  {/* Reset button column */}
+                  <div className="w-48 flex flex-col gap-4">
                     <div>
                       <div className="text-sm text-default-500 font-bold">Reset Settings</div>
                       <Divider className="w-full my-2" />
                       <div className="flex flex-col gap-5">
-                        <Button size="sm" variant="bordered">Reset to default</Button>
+                        <Button
+                          size="sm"
+                          variant="bordered"
+                          onPress={() => setSettings(getDefaultChartSettings(type))}
+                        >
+                          Reset to default
+                        </Button>
                       </div>
                     </div>
                   </div>
                 </div>
-              }
+              )}
             </DrawerBody>
           </>
         )}

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { VisualizationData } from "@/types/dashboard";
+import { VisualizationData, ChartSettings } from "@/types/dashboard";
+import { getDefaultChartSettings } from "@/utils/chart-defaults";
 
 interface DashboardVisualizationState {
   visualizations: VisualizationData[];
@@ -20,10 +21,17 @@ const dashboardVisualizationSlice = createSlice({
   initialState,
   reducers: {
     setVisualizations: (state, action: PayloadAction<VisualizationData[]>) => {
-      state.visualizations = action.payload;
+      state.visualizations = action.payload.map(viz => ({
+        ...viz,
+        settings: viz.settings || getDefaultChartSettings(viz.type)
+      }));
     },
     addVisualization: (state, action: PayloadAction<VisualizationData>) => {
-      state.visualizations.push(action.payload);
+      const visualization = action.payload;
+      if (!visualization.settings) {
+        visualization.settings = getDefaultChartSettings(visualization.type);
+      }
+      state.visualizations.push(visualization);
     },
     updateVisualizationData: (
       state,
@@ -80,6 +88,18 @@ const dashboardVisualizationSlice = createSlice({
         viz.height = action.payload.height;
       }
     },
+    updateVisualizationSettings: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        settings: ChartSettings;
+      }>
+    ) => {
+      const viz = state.visualizations.find((v) => v.id === action.payload.id);
+      if (viz) {
+        viz.settings = action.payload.settings;
+      }
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
@@ -101,6 +121,7 @@ export const {
   setVisualizationError,
   removeVisualization,
   updateVisualizationLayout,
+  updateVisualizationSettings,
   setLoading,
   setError,
   setSuccess,

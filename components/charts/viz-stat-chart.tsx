@@ -2,16 +2,22 @@
 
 import { Spinner } from "@heroui/react";
 import { useEffect, useRef, useState } from "react";
+import { StatChartSettings } from "@/types/dashboard";
+import { getDefaultChartSettings } from "@/utils/chart-defaults";
 
 interface VizStatChartProps {
   data: any[];
   chartSeries: { name: string }[];
   loading?: boolean;
+  settings?: StatChartSettings;
 }
 
-export default function VizStatChart({ data, chartSeries, loading = false }: VizStatChartProps) {
+export default function VizStatChart({ data, chartSeries, loading = false, settings }: VizStatChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [fontSize, setFontSize] = useState(48);
+
+  // Get settings with fallback to defaults
+  const chartSettings = settings || (getDefaultChartSettings("stat") as StatChartSettings);
 
   // Calculate dynamic font size based on container dimensions
   useEffect(() => {
@@ -101,7 +107,7 @@ export default function VizStatChart({ data, chartSeries, loading = false }: Viz
     <div ref={containerRef} className={`grid ${gridClass} gap-4 h-full w-full p-4`}>
       {latestValues.map((stat, i) => {
         const color = `hsl(${(i * 137) % 360}, 70%, 50%)`;
-        
+
         return (
           <div
             key={i}
@@ -110,23 +116,25 @@ export default function VizStatChart({ data, chartSeries, loading = false }: Viz
             {/* Value */}
             <div
               className="font-bold leading-none"
-              style={{ 
+              style={{
                 fontSize: `${fontSize}px`,
                 color: color
               }}
             >
               {typeof stat.value === "number"
-                ? stat.value.toFixed(2)
+                ? stat.value.toFixed(chartSettings.display.decimalPlaces)
                 : stat.value}
             </div>
-            
+
             {/* Label */}
-            <div 
-              className="text-default-500 mb-2 text-center line-clamp-2 px-2"
-              style={{ fontSize: `${labelFontSize}px` }}
-            >
-              {stat.name}
-            </div>
+            {chartSettings.display.showLabel && (
+              <div
+                className="text-default-500 mb-2 text-center line-clamp-2 px-2"
+                style={{ fontSize: `${labelFontSize}px` }}
+              >
+                {stat.name}
+              </div>
+            )}
           </div>
         );
       })}
