@@ -78,6 +78,11 @@ export type StatChartSettings = {
     showLabel: boolean;
     fontSize?: "auto" | "small" | "medium" | "large";
   };
+  sparkline?: {
+    show: boolean;
+    height?: number;
+    gradientOpacity?: number;
+  };
 };
 
 // Pie Chart Settings

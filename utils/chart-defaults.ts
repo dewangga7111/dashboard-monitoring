@@ -69,6 +69,11 @@ export const getDefaultChartSettings = (
           showLabel: true,
           fontSize: "auto",
         },
+        sparkline: {
+          show: false,
+          height: 40,
+          gradientOpacity: 0.6,
+        },
       } as StatChartSettings;
 
     case "pie":

@@ -55,6 +55,22 @@ export default function StatChartSettingsPanel({
             </div>
           </div>
         </div>
+
+        {/* Misc Settings */}
+        <div>
+          <div className="text-sm text-default-500 font-bold">Misc</div>
+          <Divider className="w-full my-2" />
+          <div className="flex flex-col gap-5">
+            <div className="flex justify-between items-center">
+              <span className="text-sm">Sparkline</span>
+              <Switch
+                isSelected={settings.sparkline?.show ?? false}
+                onValueChange={(v) => updateSetting("sparkline.show", v)}
+                size="sm"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

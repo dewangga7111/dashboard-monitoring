@@ -1,9 +1,10 @@
 "use client";
 
 import { Spinner } from "@heroui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { StatChartSettings } from "@/types/dashboard";
 import { getDefaultChartSettings } from "@/utils/chart-defaults";
+import { ResponsiveContainer, AreaChart, Area, YAxis } from "recharts";
 
 interface VizStatChartProps {
   data: any[];
@@ -99,40 +100,93 @@ export default function VizStatChart({ data, chartSeries, loading = false, setti
   };
 
   const gridClass = getGridClass(latestValues.length);
-  
+
   // Calculate label font size (proportional to value font size)
   const labelFontSize = Math.max(fontSize * 0.25, 10);
+
+  // Check if sparkline is enabled
+  const showSparkline = chartSettings.sparkline?.show ?? false;
+  const sparklineHeight = chartSettings.sparkline?.height ?? 40;
+  const gradientOpacity = chartSettings.sparkline?.gradientOpacity ?? 0.6;
+
+  // Prepare sparkline data for each series
+  const sparklineData = useMemo(() => {
+    if (!showSparkline || !data || data.length === 0) return {};
+
+    const result: Record<string, { value: number }[]> = {};
+    chartSeries.forEach((series) => {
+      result[series.name] = data.map((point) => ({
+        value: point[series.name] ?? 0,
+      }));
+    });
+    return result;
+  }, [data, chartSeries, showSparkline]);
+
+  // Generate unique gradient IDs for each series
+  const getGradientId = (index: number) => `sparklineGradient-${index}`;
 
   return (
     <div ref={containerRef} className={`grid ${gridClass} gap-4 h-full w-full p-4`}>
       {latestValues.map((stat, i) => {
         const color = `hsl(${(i * 137) % 360}, 70%, 50%)`;
+        const gradientId = getGradientId(i);
 
         return (
           <div
             key={i}
-            className="flex flex-col items-center justify-center h-full"
+            className="flex flex-col items-center justify-center h-full relative"
           >
-            {/* Value */}
-            <div
-              className="font-bold leading-none"
-              style={{
-                fontSize: `${fontSize}px`,
-                color: color
-              }}
-            >
-              {typeof stat.value === "number"
-                ? stat.value.toFixed(chartSettings.display.decimalPlaces)
-                : stat.value}
+            {/* Content wrapper - pushes content up when sparkline is shown */}
+            <div className={`flex flex-col items-center justify-center ${showSparkline ? 'flex-1' : 'h-full'}`}>
+              {/* Value */}
+              <div
+                className="font-bold leading-none"
+                style={{
+                  fontSize: `${fontSize}px`,
+                  color: color
+                }}
+              >
+                {typeof stat.value === "number"
+                  ? stat.value.toFixed(chartSettings.display.decimalPlaces)
+                  : stat.value}
+              </div>
+
+              {/* Label */}
+              {chartSettings.display.showLabel && (
+                <div
+                  className="text-default-500 mb-2 text-center line-clamp-2 px-2"
+                  style={{ fontSize: `${labelFontSize}px` }}
+                >
+                  {stat.name}
+                </div>
+              )}
             </div>
 
-            {/* Label */}
-            {chartSettings.display.showLabel && (
-              <div
-                className="text-default-500 mb-2 text-center line-clamp-2 px-2"
-                style={{ fontSize: `${labelFontSize}px` }}
-              >
-                {stat.name}
+            {/* Sparkline Area Chart */}
+            {showSparkline && sparklineData[stat.name] && (
+              <div className="w-full absolute bottom-0 left-0 right-0" style={{ height: `${sparklineHeight}%` }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={sparklineData[stat.name]}
+                    margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={color} stopOpacity={gradientOpacity} />
+                        <stop offset="100%" stopColor={color} stopOpacity={gradientOpacity * 0.3} />
+                      </linearGradient>
+                    </defs>
+                    <YAxis domain={['dataMin', 'dataMax']} hide />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke={color}
+                      strokeWidth={1.5}
+                      fill={`url(#${gradientId})`}
+                      isAnimationActive={false}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             )}
           </div>
