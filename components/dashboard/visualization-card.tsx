@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardBody, Alert, Spinner, Tooltip, Button } from "@heroui/react";
-import { Info, Trash2, GripVertical } from "lucide-react";
+import { Info, Trash2, GripVertical, Pencil } from "lucide-react";
 import { VisualizationData, LineChartSettings, AreaChartSettings, BarChartSettings, StatChartSettings, PieChartSettings, GaugeChartSettings } from "@/types/dashboard";
 import VizLineChart from "@/components/charts/viz-line-chart";
 import VizAreaChart from "@/components/charts/viz-area-chart";
@@ -14,12 +14,14 @@ interface VisualizationCardProps {
   visualization: VisualizationData;
   editMode: boolean;
   onRemove?: (id: string) => void;
+  onEdit?: (id: string) => void;
 }
 
 export default function VisualizationCard({
   visualization,
   editMode,
   onRemove,
+  onEdit,
 }: VisualizationCardProps) {
   const renderChart = () => {
     // Show loading state
@@ -137,18 +139,50 @@ export default function VisualizationCard({
             </Tooltip>
           )}
 
-          {/* Remove button for edit mode */}
-          {editMode && onRemove && (
-            <Button
-              isIconOnly
-              size="sm"
-              color="danger"
-              variant="light"
-              className="absolute top-2 right-2"
-              onPress={() => onRemove(visualization.id)}
-            >
-              <Trash2 size={16} />
-            </Button>
+          {/* Edit and Remove buttons for edit mode */}
+          {editMode && (
+            <div className="absolute top-2 right-2 flex gap-1">
+              {onEdit && (
+                <Tooltip
+                  content="Edit Visualization"
+                  placement="bottom"
+                  color="foreground"
+                  closeDelay={0}
+                  delay={500}
+                  size="sm"
+                >
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    color="primary"
+                    variant="light"
+                    onPress={() => onEdit(visualization.id)}
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                </Tooltip>
+              )}
+              {onRemove && (
+                <Tooltip
+                  content="Remove Visualization"
+                  placement="bottom"
+                  color="foreground"
+                  closeDelay={0}
+                  delay={500}
+                  size="sm"
+                >
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    color="danger"
+                    variant="light"
+                    onPress={() => onRemove(visualization.id)}
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </Tooltip>
+              )}
+            </div>
           )}
 
           {/* Visualization title */}

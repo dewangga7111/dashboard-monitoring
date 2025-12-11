@@ -23,6 +23,7 @@ import VisualizationCard from "@/components/dashboard/visualization-card";
 import { VisualizationData } from "@/types/dashboard";
 import {
   addVisualization,
+  updateVisualization,
   removeVisualization,
   updateVisualizationLayout,
   setVisualizations,
@@ -43,6 +44,7 @@ export default function DashboardPage() {
   const [gridWidth, setGridWidth] = useState(1200);
   const [editMode, setEditMode] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [editingVisualizationId, setEditingVisualizationId] = useState<string | null>(null);
   const [tempVisualizations, setTempVisualizations] = useState<VisualizationData[]>([]);
   const [start, setStart] = useState<string>(
     moment().subtract(1, "hour").toISOString()
@@ -168,6 +170,7 @@ export default function DashboardPage() {
         y: v.y,
         width: v.width,
         height: v.height,
+        settings: v.settings
       })),
     }
     console.log(data);
@@ -190,8 +193,15 @@ export default function DashboardPage() {
   };
 
   const handleAddVisualization = (visualization: VisualizationData) => {
-    dispatch(addVisualization(visualization));
-    // Fetch data for the new visualization
+    if (editingVisualizationId) {
+      // Update existing visualization
+      dispatch(updateVisualization(visualization));
+      setEditingVisualizationId(null);
+    } else {
+      // Add new visualization
+      dispatch(addVisualization(visualization));
+    }
+    // Fetch data for the visualization
     dispatch(fetchVisualizationData(visualization, start, end));
   };
 
@@ -202,6 +212,11 @@ export default function DashboardPage() {
         dispatch(removeVisualization(id));
       },
     });
+  };
+
+  const handleEditVisualization = (id: string) => {
+    setEditingVisualizationId(id);
+    setOpenDrawer(true);
   };
 
   const handleRefresh = () => {
@@ -355,6 +370,7 @@ export default function DashboardPage() {
                     visualization={viz}
                     editMode={editMode}
                     onRemove={handleRemoveVisualization}
+                    onEdit={handleEditVisualization}
                   />
                 </div>
               ))}
@@ -366,8 +382,18 @@ export default function DashboardPage() {
       {/* Add Visualization Drawer */}
       <AddVisualizationDrawer
         isOpen={openDrawer}
-        onOpenChange={setOpenDrawer}
+        onOpenChange={(open) => {
+          setOpenDrawer(open);
+          if (!open) {
+            setEditingVisualizationId(null);
+          }
+        }}
         onAdd={handleAddVisualization}
+        editingVisualization={
+          editingVisualizationId
+            ? store.visualizations.find((v) => v.id === editingVisualizationId) || null
+            : null
+        }
       />
     </div>
   );

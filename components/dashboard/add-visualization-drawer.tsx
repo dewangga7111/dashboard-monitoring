@@ -34,6 +34,7 @@ interface AddVisualizationDrawerProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onAdd: (visualization: any) => void;
+  editingVisualization?: VisualizationData | null;
 }
 
 const visualizationTypes = [
@@ -51,7 +52,8 @@ const end = moment().toISOString();
 export default function AddVisualizationDrawer({
   isOpen,
   onOpenChange,
-  onAdd
+  onAdd,
+  editingVisualization
 }: AddVisualizationDrawerProps) {
   const dispatch = useDispatch<AppDispatch>();
   const store = useSelector((state: RootState) => state.prometheus);
@@ -79,6 +81,24 @@ export default function AddVisualizationDrawer({
     setSettings(getDefaultChartSettings(type));
   }, [type]);
 
+  // Load editing visualization data when in edit mode
+  useEffect(() => {
+    if (editingVisualization && isOpen) {
+      setName(editingVisualization.name);
+      setType(editingVisualization.type);
+      setDescription(editingVisualization.description || "");
+      setQueries(editingVisualization.queries.length > 0
+        ? editingVisualization.queries
+        : [{ id: uuidv4(), expression: "", legend: "" }]);
+      setSettings(editingVisualization.settings || getDefaultChartSettings(editingVisualization.type));
+
+      // Execute queries to load data
+      if (editingVisualization.queries.length > 0) {
+        dispatch(fetchPrometheusQueries(editingVisualization.queries, start, end));
+      }
+    }
+  }, [editingVisualization, isOpen, dispatch]);
+
   useEffect(() => {
     return () => {
       clearState();
@@ -99,16 +119,16 @@ export default function AddVisualizationDrawer({
 
     // Collect visualization data and call onAdd
     const data: VisualizationData = {
-      id: uuidv4(),
+      id: editingVisualization?.id || uuidv4(),
       name: name,
       type: type,
       description: description,
       queries: queries.filter(q => q.expression.trim()), // Only include non-empty queries
       settings: settings, // Include settings
-      x: 0,
-      y: 0,
-      width: 6,
-      height: 6
+      x: editingVisualization?.x || 0,
+      y: editingVisualization?.y || 0,
+      width: editingVisualization?.width || 6,
+      height: editingVisualization?.height || 6
     };
     onAdd(data);
     clearState();
@@ -255,13 +275,13 @@ export default function AddVisualizationDrawer({
         {() => (
           <>
             <DrawerHeader className="absolute top-0 inset-x-0 z-50 flex flex-row gap-2 px-2 py-2 border-b border-default-200/50 justify-between bg-content1/50 backdrop-saturate-150 backdrop-blur-lg">
-              Add Visualization
+              {editingVisualization ? "Edit Visualization" : "Add Visualization"}
               <div className="flex gap-2">
                 <Button color="default" variant="flat" size="sm" onPress={handleClose}>
                   Close
                 </Button>
                 <Button color="primary" size="sm" onPress={handleAdd}>
-                  Add
+                  {editingVisualization ? "Update" : "Add"}
                 </Button>
               </div>
             </DrawerHeader>

@@ -33,6 +33,16 @@ const dashboardVisualizationSlice = createSlice({
       }
       state.visualizations.push(visualization);
     },
+    updateVisualization: (state, action: PayloadAction<VisualizationData>) => {
+      const index = state.visualizations.findIndex((v) => v.id === action.payload.id);
+      if (index !== -1) {
+        const visualization = action.payload;
+        if (!visualization.settings) {
+          visualization.settings = getDefaultChartSettings(visualization.type);
+        }
+        state.visualizations[index] = visualization;
+      }
+    },
     updateVisualizationData: (
       state,
       action: PayloadAction<{
@@ -116,6 +126,7 @@ const dashboardVisualizationSlice = createSlice({
 export const {
   setVisualizations,
   addVisualization,
+  updateVisualization,
   updateVisualizationData,
   setVisualizationLoading,
   setVisualizationError,
