@@ -126,7 +126,7 @@ export default function VizStatChart({ data, chartSeries, loading = false, setti
   const getGradientId = (index: number) => `sparklineGradient-${index}`;
 
   return (
-    <div ref={containerRef} className={`grid ${gridClass} gap-4 h-full w-full p-4`}>
+    <div ref={containerRef} className={`grid ${gridClass} gap-4 h-full w-full ${showSparkline ? 'p-0' : 'p-4'}`}>
       {latestValues.map((stat, i) => {
         const color = `hsl(${(i * 137) % 360}, 70%, 50%)`;
         const gradientId = getGradientId(i);
@@ -134,7 +134,7 @@ export default function VizStatChart({ data, chartSeries, loading = false, setti
         return (
           <div
             key={i}
-            className="flex flex-col items-center justify-center h-full relative"
+            className="flex flex-col items-center justify-center h-full relative overflow-hidden"
           >
             {/* Content wrapper - pushes content up when sparkline is shown */}
             <div className={`flex flex-col items-center justify-center ${showSparkline ? 'flex-1' : 'h-full'}`}>
@@ -164,7 +164,7 @@ export default function VizStatChart({ data, chartSeries, loading = false, setti
 
             {/* Sparkline Area Chart */}
             {showSparkline && sparklineData[stat.name] && (
-              <div className="w-full absolute bottom-0 left-0 right-0" style={{ height: `${sparklineHeight}%` }}>
+              <div className="w-[calc(100%+2px)] absolute bottom-0 -left-[1px] -right-[1px]" style={{ height: `${sparklineHeight}%` }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
                     data={sparklineData[stat.name]}

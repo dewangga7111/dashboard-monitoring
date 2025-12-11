@@ -65,6 +65,7 @@ export default function AddVisualizationDrawer({
   const [description, setDescription] = useState("");
   const [activeTab, setActiveTab] = useState<"query" | "settings">("query");
   const [settings, setSettings] = useState<ChartSettings>(getDefaultChartSettings("line"));
+  const [isLoadingEdit, setIsLoadingEdit] = useState(false);
 
   const clearState = () => {
     setQueries([{ id: uuidv4(), expression: "", legend: "" }]);
@@ -73,17 +74,14 @@ export default function AddVisualizationDrawer({
     setDescription("");
     setSettings(getDefaultChartSettings("line"));
     setActiveTab("query");
+    setIsLoadingEdit(false);
     dispatch(clearPrometheus());
   };
-
-  // Initialize settings when chart type changes
-  useEffect(() => {
-    setSettings(getDefaultChartSettings(type));
-  }, [type]);
 
   // Load editing visualization data when in edit mode
   useEffect(() => {
     if (editingVisualization && isOpen) {
+      setIsLoadingEdit(true);
       setName(editingVisualization.name);
       setType(editingVisualization.type);
       setDescription(editingVisualization.description || "");
@@ -96,8 +94,37 @@ export default function AddVisualizationDrawer({
       if (editingVisualization.queries.length > 0) {
         dispatch(fetchPrometheusQueries(editingVisualization.queries, start, end));
       }
+
+      // Mark loading as complete after state is set
+      setTimeout(() => setIsLoadingEdit(false), 100);
     }
   }, [editingVisualization, isOpen, dispatch]);
+
+  // Initialize settings when chart type changes
+  useEffect(() => {
+    // Skip if we're currently loading edit data
+    if (isLoadingEdit) {
+      return;
+    }
+
+    // When type changes, always update settings to match
+    // In edit mode, this ensures settings type matches current type
+    // In create mode, this provides defaults
+    if (editingVisualization && isOpen) {
+      // In edit mode, preserve existing settings but ensure type matches
+      setSettings(prev => {
+        // If settings type doesn't match current type, get defaults for new type
+        if (prev.type !== type) {
+          console.log("Type changed in edit mode:", prev.type, "->", type);
+          return getDefaultChartSettings(type);
+        }
+        return prev;
+      });
+    } else {
+      // Not in edit mode, use defaults
+      setSettings(getDefaultChartSettings(type));
+    }
+  }, [type]);
 
   useEffect(() => {
     return () => {
