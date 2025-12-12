@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from "react";
-import { permissionList, Permission } from "@/dummy/permission";
 import constants from "@/utils/constants";
+import { Permission } from "@/types/permission";
 
 type PermissionContextType = {
   permissions: Permission[];
@@ -26,9 +26,6 @@ export const PermissionProvider = ({ children }: { children: React.ReactNode }) 
     const stored = localStorage.getItem("permissions");
     if (stored) {
       setPermissions(JSON.parse(stored));
-    } else {
-      // default simulated permissions
-      setPermissions(permissionList);
     }
     setIsLoading(false);
   }, []);
