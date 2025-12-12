@@ -45,7 +45,7 @@ export default function LogsPage() {
         }}
       />
       <div className="flex justify-end gap-3 items-end">
-        <Button onPress={() => { router.push(`${constants.path.LOGS}/add`) }} color="primary" startContent={<PlusIcon />}>
+        <Button onPress={() => { router.push(`${constants.menu.LOGS.path}/add`) }} color="primary" startContent={<PlusIcon />}>
           Add Service
         </Button>
       </div>
@@ -90,7 +90,7 @@ export default function LogsPage() {
                   </ManagedPopover>
                   <span className="text-sm font-semibold ml-2">{data.service_name}</span>
                 </div>
-                <Button size="sm" variant="bordered" color="primary" radius="full" onPress={() => { router.push(`${constants.path.LOGS}/overview/${data.id}`) }}>Show Logs</Button>
+                <Button size="sm" variant="bordered" color="primary" radius="full" onPress={() => { router.push(`${constants.menu.LOGS.path}/overview/${data.id}`) }}>Show Logs</Button>
               </div>
               <div className="grid lg:grid-cols-5 w-full">
                 <div className="col-span-2">

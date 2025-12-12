@@ -22,7 +22,7 @@ export default function AddRolesPage() {
   useEffect(() => {
     if (store.success) {
       showSuccessToast(constants.toast.SUCCESS_SAVE)
-      router.push(constants.path.ROLES)
+      router.push(constants.menu.LOGS.path)
     } else if (store.error) {
       showErrorToast(store.error)
     }
@@ -41,7 +41,7 @@ export default function AddRolesPage() {
 
   const doSave = (data: any) => {
     showSuccessToast(constants.toast.SUCCESS_SAVE);
-    router.push(constants.path.ROLES);
+    router.push(constants.menu.LOGS.path);
   }
 
   return (

@@ -1,21 +1,18 @@
 const moduleConfig = {
   menu: {
-    MENU_ID_USER: "USERS_PAGE",
-    MENU_ID_ROLE: "ROLES_PAGE",
-    MENU_ID_DIVISION: "DIVISION_PAGE",
-    MENU_ID_LOGS: "LOGS_PAGE",
-    MENU_ID_DASHBOARD: "DASHBOARD_PAGE",
-    MENU_ID_QUERY: "QUERY_PAGE"
+    DASHBOARD: { functionId: "F201", path: "/dashboard" },
+    QUERY: { functionId: "F301", path: "/query" },
+    LOGS: { functionId: "F401", path: "/logs" },
+    USERS: { functionId: "F501", path: "/users" },
+    ROLES: { functionId: "F502", path: "/roles" },
+    DIVISION: { functionId: "F503", path: "/division" },
   },
   path: {
-    USERS: "/users",
-    ROLES: "/roles",
-    DIVISION: "/division",
-    DASHBOARD: "/dashboard",
-    LOGS: "/logs",
     UNAUTHORIZED: "/misc/403",
     LOGIN: "/auth/login",
-    QUERY: "/query"
+  },
+  get menuRoutes() {
+    return Object.values(this.menu);
   },
   confirmation: {
     DELETE: "Are you sure you want to delete this data?",

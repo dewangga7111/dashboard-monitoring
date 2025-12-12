@@ -41,7 +41,7 @@ export default function RolesRenderCell({ item, columnKey }: RenderCellProps) {
               key="permission"
               startContent={<Lock size={13}/>}
               onPress={() => {
-                router.push(`${constants.path.ROLES}/permission/${item.id}`);
+                router.push(`${constants.menu.LOGS.path}/permission/${item.id}`);
               }}
             >
               Permission
@@ -50,7 +50,7 @@ export default function RolesRenderCell({ item, columnKey }: RenderCellProps) {
               key="edit"
               startContent={<Pencil size={13}/>}
               onPress={() => {
-                router.push(`${constants.path.ROLES}/edit/${item.id}`);
+                router.push(`${constants.menu.LOGS.path}/edit/${item.id}`);
               }}
             >
               Edit

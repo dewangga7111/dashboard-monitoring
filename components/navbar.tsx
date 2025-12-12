@@ -29,6 +29,7 @@ import { useConfirmation } from "@/context/confirmation-context";
 import { showSuccessToast } from "@/utils/common";
 import { ManagedPopover } from "./common/managed-popover";
 import constants from "@/utils/constants"
+import { logout } from "@/redux/api/auth-api";
 
 const getBasePath = (path: string) => {
   if (!path) return "/";
@@ -172,9 +173,9 @@ export const Navbar = () => {
                   onPress={() => {
                     confirm({
                       message: constants.confirmation.LOGOUT,
-                      onConfirm: () => {
+                      onConfirm: async () => {
+                        await logout();
                         showSuccessToast(constants.toast.SUCCESS_LOGOUT);
-                        router.push(constants.path.LOGIN)
                       },
                     });
                   }}

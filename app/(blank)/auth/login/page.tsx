@@ -5,26 +5,60 @@ import { LogIn } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import AppTextInput from "@/components/common/app-text-input";
-import { Button, Card, CardBody, Form, Image } from "@heroui/react";
+import { Button, Card, CardBody, Form, Image, Checkbox } from "@heroui/react";
 import Footer from "@/components/footer";
 import logo from "@/assets/images/logo.png"
 import server from "@/assets/images/server.jpg"
 import AppTextInputPassword from "@/components/common/app-text-input-password";
-import { showSuccessToast } from "@/utils/common";
+import { showSuccessToast, showErrorToast } from "@/utils/common";
 import { isMobile } from "react-device-detect";
 import constants from "@/utils/constants";
+import { login } from "@/redux/api/auth-api";
+import { Permission } from "@/types/permission";
 
 export default function LoginPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const getFirstAccessibleRoute = (permissions: Permission[]) => {
+    for (const route of constants.menuRoutes) {
+      const perm = permissions.find(p => p.function_id === route.functionId);
+      if (perm && (perm as any)[constants.permission.READ] === 'Y') {
+        return route.path;
+      }
+    }
+    return constants.path.UNAUTHORIZED;
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget));
-    showSuccessToast(constants.toast.SUCCESS_LOGIN)
-    router.push("/")
+    const formData = Object.fromEntries(new FormData(e.currentTarget));
+
+    setIsLoading(true);
+    try {
+      const response = await login({
+        user_id: formData.user_id as string,
+        password: formData.password as string,
+        remember_me: rememberMe,
+        recaptcha_token: "", // Add recaptcha if needed
+      });
+
+      showSuccessToast(constants.toast.SUCCESS_LOGIN);
+
+      // Get first accessible route based on permissions
+      const firstRoute = getFirstAccessibleRoute(response.data.permissions);
+
+      // Use window.location.href for a full page reload to ensure contexts are fresh
+      window.location.href = firstRoute;
+    } catch (error: any) {
+      showErrorToast(error.message || "Login failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const form = () => {
@@ -32,22 +66,33 @@ export default function LoginPage() {
       <Form onSubmit={handleSubmit}>
         <AppTextInput
           isRequired
-          key='email'
-          name='email'
-          label='Email'
-          type="email"
+          key='user_id'
+          name='user_id'
+          label='Username'
+          isDisabled={isLoading}
         />
         <AppTextInputPassword
           isRequired
           key='password'
           name='password'
           label='Password'
+          isDisabled={isLoading}
         />
+        <Checkbox
+          isSelected={rememberMe}
+          onValueChange={setRememberMe}
+          className="mt-4"
+          isDisabled={isLoading}
+        >
+          Remember me
+        </Checkbox>
         <Button
           type="submit"
           color="primary"
           className="w-full mt-5"
           startContent={<LogIn size={15} />}
+          isLoading={isLoading}
+          isDisabled={isLoading}
         >
           Login
         </Button>

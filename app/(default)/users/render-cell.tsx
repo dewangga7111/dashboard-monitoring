@@ -44,7 +44,7 @@ export default function UsersRenderCell({ item, columnKey }: RenderCellProps) {
               key="edit"
               startContent={<Pencil size={13}/>}
               onPress={() => {
-                router.push(`${constants.path.USERS}/edit/${item.id}`);
+                router.push(`${constants.menu.USERS.path}/edit/${item.id}`);
               }}
             >
               Edit

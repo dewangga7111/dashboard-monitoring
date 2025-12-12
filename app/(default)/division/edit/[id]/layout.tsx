@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function DivisionLayout({ children }: { children: React.ReactNode }) {
   return (
-    <RouteGuardProvider pageId={constants.menu.MENU_ID_DIVISION} access={constants.permission.UPDATE}>
+    <RouteGuardProvider functionId={constants.menu.DIVISION.functionId} access={constants.permission.UPDATE}>
       {children}
     </RouteGuardProvider>
   );

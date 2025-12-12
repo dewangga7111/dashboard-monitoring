@@ -43,7 +43,7 @@ export default function RolesRenderCell({ item, columnKey }: RenderCellProps) {
               key="edit"
               startContent={<Pencil size={13} />}
               onPress={() => {
-                router.push(`${constants.path.DASHBOARD}/edit/${item.id}`);
+                router.push(`${constants.menu.DASHBOARD.path}/edit/${item.id}`);
               }}
             >
               Edit
@@ -70,7 +70,7 @@ export default function RolesRenderCell({ item, columnKey }: RenderCellProps) {
     
     case "name":
       return (
-        <Link href={`${constants.path.DASHBOARD}/overview/${item.id}`} className="text-sm" underline="hover">{cellValue}</Link>
+        <Link href={`${constants.menu.DASHBOARD.path}/overview/${item.id}`} className="text-sm" underline="hover">{cellValue}</Link>
       )
 
     case "status":

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function UsersLayout({ children }: { children: React.ReactNode }) {
   return (
-    <RouteGuardProvider pageId={constants.menu.MENU_ID_USER} access={constants.permission.CREATE}>
+    <RouteGuardProvider functionId={constants.menu.USERS.functionId} access={constants.permission.CREATE}>
       {children}
     </RouteGuardProvider>
   );

@@ -67,7 +67,7 @@ export default function DashboardPage() {
         onPageChange={(page: number) => {
           dispatch(fetchDashboard({ ...store.params, ...store.paging, page }));
         }}
-        doAdd={() => router.push(`${constants.path.DASHBOARD}/add`)}
+        doAdd={() => router.push(`${constants.menu.DASHBOARD.path}/add`)}
       />
     </div>
   );

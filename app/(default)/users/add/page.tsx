@@ -22,7 +22,7 @@ export default function AddUsersPage() {
   useEffect(() => {
     if (store.success) {
       showSuccessToast(constants.toast.SUCCESS_SAVE)
-      router.push(constants.path.USERS)
+      router.push(constants.menu.USERS.path)
     } else if (store.error) {
       showErrorToast(store.error)
     }
@@ -41,7 +41,7 @@ export default function AddUsersPage() {
 
   const doSave = (data: any) => {
     showSuccessToast(constants.toast.SUCCESS_SAVE);
-    router.push(constants.path.USERS);
+    router.push(constants.menu.USERS.path);
   }
 
   return (

@@ -22,7 +22,7 @@ export default function AddDivisionPage() {
   useEffect(() => {
     if (store.success) {
       showSuccessToast(constants.toast.SUCCESS_SAVE)
-      router.push(constants.path.DIVISION)
+      router.push(constants.menu.DIVISION.path)
     } else if (store.error) {
       showErrorToast(store.error)
     }
@@ -41,7 +41,7 @@ export default function AddDivisionPage() {
 
   const doSave = (data: any) => {
     showSuccessToast(constants.toast.SUCCESS_SAVE);
-    router.push(constants.path.DIVISION);
+    router.push(constants.menu.DIVISION.path);
   }
 
   return (

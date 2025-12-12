@@ -5,11 +5,13 @@ import constants from "@/utils/constants";
 
 type PermissionContextType = {
   permissions: Permission[];
+  isLoading: boolean;
   canRead: (pageId: string) => boolean;
   canCreate: (pageId: string) => boolean;
   canUpdate: (pageId: string) => boolean;
   canDelete: (pageId: string) => boolean;
   hasPermission: (pageId: string, action: string) => boolean;
+  getFirstAccessibleRoute: () => string | null;
 };
 
 const PermissionContext = createContext<PermissionContextType | undefined>(undefined);
@@ -17,6 +19,7 @@ const PermissionContext = createContext<PermissionContextType | undefined>(undef
 // context ini untuk menyediakan permission untuk kebutuhan penjagaan
 export const PermissionProvider = ({ children }: { children: React.ReactNode }) => {
   const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load permissions once
   useEffect(() => {
@@ -27,10 +30,11 @@ export const PermissionProvider = ({ children }: { children: React.ReactNode }) 
       // default simulated permissions
       setPermissions(permissionList);
     }
+    setIsLoading(false);
   }, []);
 
-  const hasPermission = (pageId: string, action: string) => {
-    const perm = permissions.find(p => p.function_id === pageId);
+  const hasPermission = (functionId: string, action: string) => {
+    const perm = permissions.find(p => p.function_id === functionId);
     if (!perm) return false;
     return (perm as any)[action] === 'Y';
   };
@@ -40,14 +44,25 @@ export const PermissionProvider = ({ children }: { children: React.ReactNode }) 
   const canUpdate = (pageId: string) => hasPermission(pageId, constants.permission.UPDATE);
   const canDelete = (pageId: string) => hasPermission(pageId, constants.permission.DELETE);
 
+  const getFirstAccessibleRoute = () => {
+    for (const route of constants.menuRoutes) {
+      if (hasPermission(route.functionId, constants.permission.READ)) {
+        return route.path;
+      }
+    }
+    return null;
+  };
+
   return (
-    <PermissionContext.Provider value={{ 
-      permissions, 
+    <PermissionContext.Provider value={{
+      permissions,
+      isLoading,
       hasPermission,
       canRead,
-      canCreate, 
+      canCreate,
       canUpdate,
-      canDelete
+      canDelete,
+      getFirstAccessibleRoute
     }}>
       {children}
     </PermissionContext.Provider>

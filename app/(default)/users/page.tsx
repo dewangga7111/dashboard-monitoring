@@ -79,7 +79,7 @@ export default function UsersPage() {
         onPageChange={(page: number) => {
           dispatch(fetchUsers({ ...store.params, ...store.paging, page }));
         }}
-        doAdd={() => router.push(`${constants.path.USERS}/add`)}
+        doAdd={() => router.push(`${constants.menu.USERS.path}/add`)}
       />
     </div>
   );

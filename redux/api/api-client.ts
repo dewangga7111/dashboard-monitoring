@@ -21,8 +21,25 @@ apiClient.interceptors.request.use((config) => {
 // ✅ Optional: global error handling
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const message = `API error: ${error.response?.data || error.message}`;
+  async (error) => {
+    // Handle 401 Unauthorized errors
+    if (error.response?.status === 401) {
+      console.warn("🚫 401 Unauthorized - Session expired or invalid token");
+
+      // Dynamically import to avoid circular dependency
+      const { clearAuthData } = await import("./auth-api");
+
+      // Clear auth data
+      clearAuthData();
+
+      // Redirect to login page
+      window.location.href = "/auth/login";
+
+      return Promise.reject(error);
+    }
+
+    // Handle other errors
+    const message = `API error: ${error.response?.data?.message || error.message}`;
     console.error(message);
     showErrorToast(message);
     return Promise.reject(error);

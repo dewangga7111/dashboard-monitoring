@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <RouteGuardProvider pageId={constants.menu.MENU_ID_DASHBOARD} access={constants.permission.READ}>
+    <RouteGuardProvider functionId={constants.menu.DASHBOARD.functionId} access={constants.permission.READ}>
       {children}
     </RouteGuardProvider>
   );

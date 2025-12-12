@@ -41,7 +41,7 @@ export default function DivisionRenderCell({ item, columnKey }: RenderCellProps)
               key="edit"
               startContent={<Pencil size={13}/>}
               onPress={() => {
-                router.push(`${constants.path.DIVISION}/edit/${item.id}`);
+                router.push(`${constants.menu.DIVISION.path}/edit/${item.id}`);
               }}
             >
               Edit

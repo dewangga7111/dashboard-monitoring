@@ -65,7 +65,7 @@ export default function RolesPage() {
         onPageChange={(page: number) => {
           dispatch(fetchRoles({ ...store.params, ...store.paging, page }));
         }}
-        doAdd={() => router.push(`${constants.path.ROLES}/add`)}
+        doAdd={() => router.push(`${constants.menu.ROLES.path}/add`)}
       />
     </div>
   );

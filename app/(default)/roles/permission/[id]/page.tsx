@@ -39,7 +39,7 @@ export default function EditPermissionPage() {
   useEffect(() => {
     if (store.success) {
       showSuccessToast(constants.toast.SUCCESS_SAVE);
-      router.push(constants.path.ROLES);
+      router.push(constants.menu.ROLES.path);
     } else if (store.error) {
       showErrorToast(store.error);
     }
@@ -67,7 +67,7 @@ export default function EditPermissionPage() {
   const doSave = () => {
     console.log("Saving permissions:", permissions);
     showSuccessToast(constants.toast.SUCCESS_SAVE);
-    router.push(constants.path.ROLES);
+    router.push(constants.menu.ROLES.path);
   };
 
   return (

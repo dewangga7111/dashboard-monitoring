@@ -65,7 +65,7 @@ export default function DivisionPage() {
         onPageChange={(page: number) => {
           dispatch(fetchDivision({ ...store.params, ...store.paging, page }));
         }}
-        doAdd={() => router.push(`${constants.path.DIVISION}/add`)}
+        doAdd={() => router.push(`${constants.menu.DIVISION.path}/add`)}
       />
     </div>
   );
