@@ -5,6 +5,7 @@ import { Save, Plus, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
 
 import AppTextInput from "@/components/common/app-text-input";
 import { showErrorToast, showSuccessToast } from "@/utils/common";
@@ -78,6 +79,46 @@ export default function DashboardPage() {
       resizeObserver.disconnect();
     };
   }, []);
+
+  // Handle navigation prevention when in edit mode
+  useEffect(() => {
+    if (!editMode) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      return (e.returnValue = '');
+    };
+
+    // Add beforeunload listener for browser navigation
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Store the original router.push to intercept it
+    const originalPush = router.push;
+    router.push = (...args: Parameters<typeof originalPush>) => {
+      if (editMode) {
+        confirm({
+          message: constants.confirmation.CLOSE_DRAWER,
+          confirmText: "Discard Changes",
+          cancelText: "Cancel",
+          onConfirm: () => {
+            setDashboardName(tempDashboardName);
+            dispatch(setVisualizations(tempVisualizations));
+            setEditMode(false);
+            setTempVisualizations([]);
+            setTempDashboardName("");
+            originalPush(...args);
+          },
+        });
+      } else {
+        originalPush(...args);
+      }
+    };
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      router.push = originalPush;
+    };
+  }, [editMode, tempDashboardName, tempVisualizations]);
 
   // Fetch data for all visualizations when time range changes and visualizations are changed
   useEffect(() => {
@@ -217,6 +258,25 @@ export default function DashboardPage() {
   const handleEditVisualization = (id: string) => {
     setEditingVisualizationId(id);
     setOpenDrawer(true);
+  };
+
+  const handleDuplicateVisualization = (id: string) => {
+    const vizToDuplicate = store.visualizations.find((v) => v.id === id);
+    if (!vizToDuplicate) return;
+
+    // Create a duplicate with a new ID and adjusted position
+    const duplicateViz: VisualizationData = {
+      ...vizToDuplicate,
+      id: uuidv4(),
+      name: `${vizToDuplicate.name} (Copy)`,
+      x: vizToDuplicate.x,
+      y: vizToDuplicate.y + 1,
+    };
+
+    // Add the duplicate visualization
+    dispatch(addVisualization(duplicateViz));
+    // Fetch data for the duplicated visualization
+    dispatch(fetchVisualizationData(duplicateViz, start, end));
   };
 
   const handleRefresh = () => {
@@ -371,6 +431,7 @@ export default function DashboardPage() {
                     editMode={editMode}
                     onRemove={handleRemoveVisualization}
                     onEdit={handleEditVisualization}
+                    onDuplicate={handleDuplicateVisualization}
                   />
                 </div>
               ))}

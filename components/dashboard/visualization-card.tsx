@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardBody, Alert, Spinner, Tooltip, Button } from "@heroui/react";
-import { Info, Trash2, GripVertical, Pencil } from "lucide-react";
+import { Info, Trash2, GripVertical, Pencil, Copy } from "lucide-react";
 import { VisualizationData, LineChartSettings, AreaChartSettings, BarChartSettings, StatChartSettings, PieChartSettings, GaugeChartSettings } from "@/types/dashboard";
 import VizLineChart from "@/components/charts/viz-line-chart";
 import VizAreaChart from "@/components/charts/viz-area-chart";
@@ -15,6 +15,7 @@ interface VisualizationCardProps {
   editMode: boolean;
   onRemove?: (id: string) => void;
   onEdit?: (id: string) => void;
+  onDuplicate?: (id: string) => void;
 }
 
 export default function VisualizationCard({
@@ -22,6 +23,7 @@ export default function VisualizationCard({
   editMode,
   onRemove,
   onEdit,
+  onDuplicate,
 }: VisualizationCardProps) {
   const renderChart = () => {
     // Show loading state
@@ -139,7 +141,7 @@ export default function VisualizationCard({
             </Tooltip>
           )}
 
-          {/* Edit and Remove buttons for edit mode */}
+          {/* Edit, Duplicate and Remove buttons for edit mode */}
           {editMode && (
             <div className="absolute top-2 right-2 flex gap-1">
               {onEdit && (
@@ -159,6 +161,26 @@ export default function VisualizationCard({
                     onPress={() => onEdit(visualization.id)}
                   >
                     <Pencil size={16} />
+                  </Button>
+                </Tooltip>
+              )}
+              {onDuplicate && (
+                <Tooltip
+                  content="Duplicate Visualization"
+                  placement="bottom"
+                  color="foreground"
+                  closeDelay={0}
+                  delay={500}
+                  size="sm"
+                >
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    color="primary"
+                    variant="light"
+                    onPress={() => onDuplicate(visualization.id)}
+                  >
+                    <Copy size={16} />
                   </Button>
                 </Tooltip>
               )}
